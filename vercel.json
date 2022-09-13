@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "functions": {
+      "api/nullstack.js": {
+        "includeFiles": ".production/**"
+      }
+    },
+    "routes": [
+      {
+        "handle": "filesystem"
+      },
+      {
+        "src": "(.*)",
+        "dest": "api/nullstack.js"
+      }
+    ]
+  }
