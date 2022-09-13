@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "npx nullstack start",
-    "build": "npx nullstack build",
+    "vercel-build": "npx nullstack build",
     "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./public/styles.css -m --watch",
     "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./public/styles.css"
   },
