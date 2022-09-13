@@ -3,10 +3,18 @@
 @tailwind utilities;
 
 body {
-    --tw-text-opacity:1;
-    color:rgb(232 234 237/var(--tw-text-opacity));
-    font-family: Roboto,sans-serif;
-    min-height: 100vh;
-    --tw-bg-opacity: 1;
-    background-color: rgb(29 27 35/var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgb(232 234 237 / var(--tw-text-opacity));
+  font-family: Roboto, sans-serif;
+  min-height: 100vh;
+  --tw-bg-opacity: 1;
+  background-color: rgb(29 27 35 / var(--tw-bg-opacity));
+}
+
+a {
+  @apply hover:underline;
+}
+
+.btn-primary {
+  @apply bg-primary hover:underline px-6 py-2 rounded-md flex justify-center items-center;
 }
