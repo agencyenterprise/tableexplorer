@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import { connect  } from "@tableland/sdk";
+import { connect } from "@tableland/sdk";
 
 class Login extends Nullstack {
   async connectWallet(context) {
@@ -8,7 +8,22 @@ class Login extends Nullstack {
       chain: "polygon-mumbai",
     });
     await tableland.siwe();
+    localStorage.setItem("@tltoken", tableland.token.token);
     context.__tableland = tableland;
+  }
+
+  async hydrate(context) {
+    const token = localStorage.getItem("@tltoken");
+    console.log("Token");
+    if (token) {
+      const tableland = await connect({
+        network: "testnet",
+        chain: "polygon-mumbai",
+        token,
+      });
+
+      context.__tableland = { ...tableland, token: { token: token } };
+    }
   }
 
   render() {
