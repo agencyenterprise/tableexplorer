@@ -1,0 +1,42 @@
+section {
+  width: 100%;
+  max-width: 48rem;
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 1.5em;
+}
+
+aside {
+  width: 100%;
+}
+
+article {
+  width: 100%;
+}
+
+article>*+* {
+  margin-top: 1em;
+  display: block;
+}
+
+article h1 {
+  font-family: 'Crete Round', serif;
+  letter-spacing: 0.1em;
+}
+
+article li a {
+  display: inline-block;
+  line-height: 1.25rem;
+}
+
+img {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  section {
+    flex-wrap: wrap;
+  }
+}

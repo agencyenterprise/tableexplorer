@@ -1,0 +1,24 @@
+{
+  "name": "tableland_poc",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
+    "nullstack": "~0.16.0",
+    "tailwindcss": "^3.1.8"
+  },
+  "scripts": {
+    "start": "npx nullstack start",
+    "build": "npx nullstack build",
+    "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
+    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
+  },
+  "dependencies": {
+    "@tableland/sdk": "^3.1.1",
+    "buffer": "^6.0.3",
+    "keccak": "^3.0.2",
+    "nullstack-tailwind": "^0.2.3"
+  }
+}
