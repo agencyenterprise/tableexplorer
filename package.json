@@ -12,12 +12,13 @@
   "scripts": {
     "start": "npx nullstack start",
     "build": "npx nullstack build",
-    "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
-    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
+    "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./public/styles.css -m --watch",
+    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./public/styles.css"
   },
   "dependencies": {
     "@tableland/sdk": "^3.1.1",
     "buffer": "^6.0.3",
+    "highlight.js": "^11.6.0",
     "keccak": "^3.0.2",
     "nullstack-tailwind": "^0.2.3"
   }
