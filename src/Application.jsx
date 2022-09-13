@@ -24,7 +24,6 @@ class Application extends Nullstack {
   }
 
   render({ __tableland }) {
-    console.log("tableland", __tableland);
     return (
       <main class="w-full h-screen">
         <Head />

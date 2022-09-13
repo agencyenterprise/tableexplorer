@@ -23,7 +23,6 @@ class Sidebar extends Nullstack {
   }
 
   render() {
-    console.log("List", this.list);
     return (
       <aside class="w-full max-w-[300px] px-8 py-8 flex flex-col gap-12 border-r h-full">
         {this.list && (
