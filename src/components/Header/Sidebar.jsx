@@ -14,7 +14,8 @@ class Sidebar extends Nullstack {
 
   renderListItem({ name }) {
     const query = querystring.parse(window.location.search);
-    const style = query.name === name ? "font-weight: bold;" : "";
+    const style =
+      query.name === name ? "color: #762fbe; font-weight: bold;" : "";
     return (
       <a style={style} href={`/table?name=${name}`}>
         {name}
