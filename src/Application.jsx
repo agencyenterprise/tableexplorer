@@ -35,7 +35,7 @@ class Application extends Nullstack {
               class="w-full flex justify-between"
               style="height: calc(100% - 40px)"
             >
-              <Sidebar id="sidebar" />
+              <Sidebar key="sidebar" />
               <Home route="/" />
               <Table route="/table" />
               <AddTable route="/addTable" />

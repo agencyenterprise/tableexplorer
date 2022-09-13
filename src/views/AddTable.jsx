@@ -1,13 +1,22 @@
 import Nullstack from "nullstack";
 import { Connection } from "@tableland/sdk";
+import CodeEditor from "../components/Header/CodeEditor";
+import {
+  TABLE_TYPES,
+  inputTypeByType,
+  TABLE_CONSTRAINTS,
+} from "../utils/tableTypes";
+import { parseCreateTable } from "../utils/SQLParser";
 
 class AddTable extends Nullstack {
   prefix = "";
-  query = "id integer, name text, primary key (id)";
+  query = "id integer";
   loading = false;
   err = "";
 
-  async createTable({ __tableland, context }) {
+  columns = [{ type: "integer", name: "id", constraints: [] }];
+
+  async createTable({ __tableland, instances }) {
     if (!this.prefix) return;
 
     // const tl =  __tableland as Connection;
@@ -21,7 +30,7 @@ class AddTable extends Nullstack {
           prefix: this.prefix, // Optional `prefix` used to define a human-readable string
         }
       );
-      await context.sidebar.getDatabases();
+      await instances.sidebar.getDatabases();
       this.loading = false;
     } catch (err) {
       this.err = err.message;
@@ -31,11 +40,94 @@ class AddTable extends Nullstack {
     }
   }
 
+  updateQuery() {
+    console.log("oi 1");
+    console.log({ col: this.columns });
+    this.query = parseCreateTable(this.columns);
+    console.log("oi 2", this.query);
+  }
+
+  renderColumn({ index }) {
+    return (
+      <li class="flex gap-5 items-center">
+        <button
+          class="hover:underline cursor-pointer text-red-900"
+          onclick={() => {
+            this.columns.splice(index, 1);
+            this.updateQuery();
+          }}
+        >
+          X
+        </button>
+        <div class="flex">
+          <input
+            class="bg-background"
+            placeholder="Column name"
+            type="text"
+            value={this.columns[index].name}
+            oninput={({ event }) => {
+              this.columns[index].name = event.target.value;
+              this.updateQuery();
+            }}
+          />
+          <select
+            class="bg-background"
+            name="type"
+            id={`type-${index}`}
+            value={this.columns[index].type}
+            onchange={({ event }) => {
+              this.columns[index].type = event.target.value;
+              this.updateQuery();
+            }}
+          >
+            {TABLE_TYPES.map((type) => (
+              <option class="bg-background" value={type}>
+                {type.toLocaleUpperCase()}
+              </option>
+            ))}
+          </select>
+        </div>
+        {TABLE_CONSTRAINTS.map((constraint) => (
+          <div class="flex gap-1 items-center">
+            <input
+              type="checkbox"
+              name={`check-${constraint}-${index}`}
+              checked={
+                !!this.columns[index].constraints.find((c) => c === constraint)
+              }
+              onchange={({ event }) => {
+                if (event.target.checked) {
+                  if (constraint === "PRIMARY KEY") {
+                    // Remove all the other primary keys
+                    let newColumns = this.columns.map((col) => ({
+                      ...col,
+                      constraints: col.constraints.filter(
+                        (c) => c !== constraint
+                      ),
+                    }));
+                    newColumns[index].constraints.push(constraint);
+                    this.columns = newColumns;
+                  } else {
+                    this.columns[index].constraints.push(constraint);
+                  }
+                } else {
+                  this.columns[index].constraints = this.columns[
+                    index
+                  ].constraints.filter((c) => c !== constraint);
+                }
+              }}
+            />
+            <label htmlFor={`check-${constraint}-${index}`}>{constraint}</label>
+          </div>
+        ))}
+      </li>
+    );
+  }
+
   render() {
     return (
       <div class="w-full min-h-full pt-8 px-12">
         <h1 class="text-2xl mb-4 font-bold">Create Table</h1>
-        {this.err && <p class="text-red-600 my-4">{this.err}</p>}
         <textarea
           name="query"
           id="query"
@@ -44,12 +136,35 @@ class AddTable extends Nullstack {
           class="bg-background w-full"
           bind={this.query}
         />
+        <h2 class="text-xl mb-4 font-bold">Columns</h2>
+        <ul class="flex flex-col gap-5 my-4">
+          {this.columns.map((col, index) => (
+            <Column index={index} />
+          ))}
+        </ul>
+        <button
+          onclick={() => {
+            this.columns.push({ type: "integer", name: "", constraints: [] });
+            this.updateQuery();
+          }}
+          class="btn-primary"
+        >
+          + Add Column
+        </button>
+        <hr class="my-4" />
+        <h2 class="text-xl mb-4 font-bold">
+          Your Table Prefix{" "}
+          <span class="text-sm text-paragraph">
+            // The table name will be something like YOUR_PREFIX_80001_1798
+          </span>
+        </h2>
         <input
           type="text"
           bind={this.prefix}
           placeholder="Table Prefix"
           class="bg-background mb-4"
         />
+        {this.err && <p class="text-red-600 my-4">{this.err}</p>}
         <button
           class="btn-primary"
           disabled={this.loading}
