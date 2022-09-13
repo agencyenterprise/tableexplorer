@@ -22,19 +22,29 @@ class Sidebar extends Nullstack {
     );
   }
 
+  logout(context) {
+    localStorage.clear();
+    context.__tableland = undefined;
+  }
+
   render() {
     return (
-      <aside class="w-full max-w-[300px] px-8 py-8 flex flex-col gap-12 border-r h-full">
-        {this.list && (
-          <nav class="flex flex-col gap-2">
-            {this.list.map((list) => (
-              <ListItem name={list.name} />
-            ))}
-          </nav>
-        )}
-        <a href="/addTable" class="btn-primary">
-          + Add Table
-        </a>
+      <aside class="w-full max-w-[300px] px-8 py-8 flex flex-col border-r h-full justify-between">
+        <div class="flex flex-col gap-12">
+          {this.list && (
+            <nav class="flex flex-col gap-2">
+              {this.list.map((list) => (
+                <ListItem name={list.name} />
+              ))}
+            </nav>
+          )}
+          <a href="/addTable" class="btn-primary">
+            + Add Table
+          </a>
+        </div>
+        <button class="btn-primary" onclick={this.logout}>
+          Logout
+        </button>
       </aside>
     );
   }

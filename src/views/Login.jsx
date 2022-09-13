@@ -34,15 +34,6 @@ class Login extends Nullstack {
         <button class="btn-primary" onclick={this.connectWallet}>
           Log In
         </button>
-        <p class="mt-12">
-          Documentation can be found{" "}
-          <a
-            class="font-bold hover:underline text-primary"
-            href="https://docs.tableland.xyz/"
-          >
-            here
-          </a>
-        </p>
       </div>
     );
   }

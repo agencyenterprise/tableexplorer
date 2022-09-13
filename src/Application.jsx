@@ -6,6 +6,8 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Table from "./views/Table";
 import "./styles.css";
+
+
 class Application extends Nullstack {
   prepare({ page }) {
     page.locale = "en-US";
@@ -28,11 +30,26 @@ class Application extends Nullstack {
       <main class="w-full h-screen">
         <Head />
         {__tableland?.token?.token ? (
-          <div class="w-full h-full flex justify-between">
-            <Sidebar id="sidebar" />
-            <Home route="/" />
-            <Table route="/table" />
-            <AddTable route="/addTable" />
+          <div class="w-full h-full">
+            <div
+              class="w-full flex justify-between"
+              style="height: calc(100% - 40px)"
+            >
+              <Sidebar id="sidebar" />
+              <Home route="/" />
+              <Table route="/table" />
+              <AddTable route="/addTable" />
+            </div>
+            <p class="border-t text-center p-2">
+              Documentation can be found{" "}
+              <a
+                class="font-bold hover:underline text-primary"
+                target="blank"
+                href="https://docs.tableland.xyz/"
+              >
+                here
+              </a>
+            </p>
           </div>
         ) : (
           <Login />
