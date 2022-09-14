@@ -1,6 +1,5 @@
 import Nullstack from "nullstack";
-import Header from "./components/Header/Header";
-import Sidebar from "./components/Header/Sidebar";
+import Sidebar from "./components/Sidebar";
 import AddTable from "./views/AddTable";
 import Home from "./views/Home";
 import Login from "./views/Login";
@@ -36,10 +35,12 @@ class Application extends Nullstack {
               style="height: calc(100% - 40px)"
             >
               <Sidebar key="sidebar" />
-              <Home route="/" />
-              <Table route="/table" />
-              <TableSchema route="/schema" />
-              <AddTable route="/addTable" />
+              <div class="flex flex-col w-full h-full">
+                <Home route="/" />
+                <Table route="/table" />
+                <TableSchema route="/schema" />
+                <AddTable route="/addTable" />
+              </div>
             </div>
             <p class="border-t text-center p-2">
               Documentation can be found{" "}
