@@ -1,12 +1,11 @@
 import Nullstack from "nullstack";
-import Header from "./components/Header/Header";
-import Sidebar from "./components/Header/Sidebar";
+import Sidebar from "./components/Sidebar";
 import AddTable from "./views/AddTable";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Table from "./views/Table";
 import "./styles.css";
-
+import TableSchema from "./views/TableSchema";
 
 class Application extends Nullstack {
   prepare({ page }) {
@@ -35,10 +34,13 @@ class Application extends Nullstack {
               class="w-full flex justify-between"
               style="height: calc(100% - 40px)"
             >
-              <Sidebar id="sidebar" />
-              <Home route="/" />
-              <Table route="/table" />
-              <AddTable route="/addTable" />
+              <Sidebar key="sidebar" />
+              <div class="flex flex-col w-full h-full">
+                <Home route="/" />
+                <Table route="/table" />
+                <TableSchema route="/schema" />
+                <AddTable route="/addTable" />
+              </div>
             </div>
             <p class="border-t text-center p-2">
               Documentation can be found{" "}
