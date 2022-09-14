@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import { TABLE_TYPES, parseUpdateData } from "../utils/tableTypes";
+import { TABLE_TYPES, parseUpdateData } from "../utils/tableTypes.js";
 
 class UpdateData extends Nullstack {
   loading = false;

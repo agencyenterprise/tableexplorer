@@ -1,6 +1,6 @@
 import Nullstack from "nullstack";
 import querystring from "query-string";
-import { parseDeleteData } from "../utils/TableTypes";
+import { parseDeleteData } from "../utils/TableTypes.js";
 
 class Table extends Nullstack {
   name = "";
