@@ -6,7 +6,8 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Table from "./views/Table";
 import "./styles.css";
-
+import InsertData from "./views/InsertData";
+import UpdateData from "./views/UpdateData";
 
 class Application extends Nullstack {
   prepare({ page }) {
@@ -16,10 +17,7 @@ class Application extends Nullstack {
     return (
       <head>
         <link href="https://fonts.gstatic.com" rel="preconnect" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Crete+Round&family=Roboto&display=swap"
-          rel="stylesheet"
-        />
+        <link href="https://fonts.googleapis.com/css2?family=Crete+Round&family=Roboto&display=swap" rel="stylesheet" />
         {/* <link href="/styles.css" rel="stylesheet" /> */}
       </head>
     );
@@ -31,22 +29,17 @@ class Application extends Nullstack {
         <Head />
         {__tableland?.token?.token ? (
           <div class="w-full h-full">
-            <div
-              class="w-full flex justify-between"
-              style="height: calc(100% - 40px)"
-            >
+            <div class="w-full flex justify-between" style="height: calc(100% - 40px)">
               <Sidebar id="sidebar" />
               <Home route="/" />
               <Table route="/table" />
               <AddTable route="/addTable" />
+              <InsertData route="/insertData" />
+              <UpdateData route="/updateData" />
             </div>
             <p class="border-t text-center p-2">
               Documentation can be found{" "}
-              <a
-                class="font-bold hover:underline text-primary"
-                target="blank"
-                href="https://docs.tableland.xyz/"
-              >
+              <a class="font-bold hover:underline text-primary" target="blank" href="https://docs.tableland.xyz/">
                 here
               </a>
             </p>
