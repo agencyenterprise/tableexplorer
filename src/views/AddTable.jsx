@@ -1,11 +1,5 @@
 import Nullstack from "nullstack";
-import { Connection } from "@tableland/sdk";
-import CodeEditor from "../components/Header/CodeEditor";
-import {
-  TABLE_TYPES,
-  inputTypeByType,
-  TABLE_CONSTRAINTS,
-} from "../utils/tableTypes";
+import { TABLE_TYPES, TABLE_CONSTRAINTS } from "../utils/tableTypes";
 import { parseCreateTable } from "../utils/SQLParser";
 
 class AddTable extends Nullstack {
@@ -18,9 +12,6 @@ class AddTable extends Nullstack {
 
   async createTable({ __tableland, instances }) {
     if (!this.prefix) return;
-
-    // const tl =  __tableland as Connection;
-
     this.loading = true;
     this.err = "";
     try {
@@ -41,10 +32,7 @@ class AddTable extends Nullstack {
   }
 
   updateQuery() {
-    console.log("oi 1");
-    console.log({ col: this.columns });
     this.query = parseCreateTable(this.columns);
-    console.log("oi 2", this.query);
   }
 
   renderColumn({ index }) {
@@ -115,6 +103,7 @@ class AddTable extends Nullstack {
                     index
                   ].constraints.filter((c) => c !== constraint);
                 }
+                this.updateQuery();
               }}
             />
             <label htmlFor={`check-${constraint}-${index}`}>{constraint}</label>

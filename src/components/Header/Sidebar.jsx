@@ -17,7 +17,7 @@ class Sidebar extends Nullstack {
     const style =
       query.name === name ? "color: #762fbe; font-weight: bold;" : "";
     return (
-      <a style={style} href={`/table?name=${name}`}>
+      <a style={style} href={`/schema?name=${name}`}>
         {name}
       </a>
     );

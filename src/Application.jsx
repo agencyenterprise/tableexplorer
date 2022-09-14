@@ -6,7 +6,7 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Table from "./views/Table";
 import "./styles.css";
-
+import TableSchema from "./views/TableSchema";
 
 class Application extends Nullstack {
   prepare({ page }) {
@@ -38,6 +38,7 @@ class Application extends Nullstack {
               <Sidebar key="sidebar" />
               <Home route="/" />
               <Table route="/table" />
+              <TableSchema route="/schema" />
               <AddTable route="/addTable" />
             </div>
             <p class="border-t text-center p-2">
