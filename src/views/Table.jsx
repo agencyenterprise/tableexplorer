@@ -1,12 +1,12 @@
 import Nullstack from "nullstack";
 import querystring from "query-string";
-import { Connection } from "@tableland/sdk";
+import { parseDeleteData } from "../utils/TableTypes";
 
 class Table extends Nullstack {
   name = "";
   query = "";
   data;
-
+  err = "";
   loading = false;
 
   async runQuery({ __tableland }) {
@@ -48,22 +48,39 @@ class Table extends Nullstack {
       </thead>
     );
   }
-  deleteRecord({ recordId }) {
-    this.data.rows = this.data.rows.filter((r) => r[0] != recordId);
+  async deleteRecord({ __tableland, recordId }) {
+    this.loading = true;
+    this.err = "";
+    try {
+      await __tableland.write(parseDeleteData(this.name, recordId));
+      this.data.rows = this.data.rows.filter((r) => r[0] != recordId);
+    } catch (err) {
+      this.err = err.message;
+      console.log(err);
+    } finally {
+      this.loading = false;
+    }
+  }
+  redirectToUpdatePage({ router, recordId }) {
+    console.log("redirect");
+    router.path = `/updateData?name=${this.name}&id=${recordId}`;
   }
   renderActionBtn({ row }) {
     const id = row[0];
     const deleteWrapper = () => this.deleteRecord({ recordId: id });
+    const redirect = () => this.redirectToUpdatePage({ recordId: id });
     return (
       <>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex flex-row justify-between">
-            <button class="">Update</button>
+            <button class="text-green-300 hover:text-green-100" onclick={redirect}>
+              Update
+            </button>
           </div>
         </td>
         <td class="text-sm py-4 whitespace-nowrap">
           <div>
-            <button class="" onclick={deleteWrapper}>
+            <button class="text-red-600 hover:text-red-400" onclick={deleteWrapper}>
               X
             </button>
           </div>
@@ -95,6 +112,9 @@ class Table extends Nullstack {
       <>Loading Data...</>
     );
   }
+  redirectToInsertData({ router }) {
+    router.path = "/insertData";
+  }
   render() {
     if (!this.name) return null;
     return (
@@ -104,9 +124,13 @@ class Table extends Nullstack {
         <button class="btn-primary my-4" onclick={this.runQuery} disabled={this.loading}>
           {this.loading ? "Loading..." : "Run Query"}
         </button>
+        <button class="btn-primary my-4" onclick={this.redirectToInsertData}>
+          Insert Data
+        </button>
 
         <h1 class="text-2xl mb-6">Data:</h1>
-        <TableData />
+        {this.err && <p class="text-red-600 my-4">{this.err}</p>}
+        {this.loading ? "Loading..." : <TableData />}
       </div>
     );
   }
