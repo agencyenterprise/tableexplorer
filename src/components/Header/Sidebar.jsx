@@ -14,8 +14,7 @@ class Sidebar extends Nullstack {
 
   renderListItem({ name }) {
     const query = querystring.parse(window.location.search);
-    const style =
-      query.name === name ? "color: #762fbe; font-weight: bold;" : "";
+    const style = query.name === name ? "color: #762fbe; font-weight: bold;" : "";
     return (
       <a style={style} href={`/table?name=${name}`}>
         {name}
@@ -30,8 +29,8 @@ class Sidebar extends Nullstack {
 
   render() {
     return (
-      <aside class="w-full max-w-[300px] px-8 py-8 flex flex-col border-r h-full justify-between">
-        <div class="flex flex-col gap-12">
+      <aside class="w-full max-w-[350px] px-8 py-8 flex flex-col border-r h-full justify-between overflow-x-scroll">
+        <div class="flex flex-col gap-12 pr-5">
           {this.list && (
             <nav class="flex flex-col gap-2">
               {this.list.map((list) => (
