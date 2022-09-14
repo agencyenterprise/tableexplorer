@@ -1,14 +1,16 @@
 import Nullstack from "nullstack";
-import querystring from "query-string";
-import { parseDeleteData } from "../utils/TableTypes.js";
-
+import { parseDeleteData } from "../utils/SQLParser";
+import TableNav from "../components/TableNav";
+import UpdateIcon from "../components/Update.jsx";
+import DeleteIcon from "../components/Delete.jsx";
+import Loader from "../components/Loader.jsx";
 class Table extends Nullstack {
   name = "";
   query = "";
   data;
   err = "";
   loading = false;
-
+  limit = 50;
   async runQuery({ __tableland }) {
     this.loading = true;
     const data = await __tableland.read(this.query);
@@ -24,10 +26,9 @@ class Table extends Nullstack {
     console.log(data);
   }
 
-  initiate() {
-    const query = querystring.parse(window.location.search);
-    this.name = query.name;
-    this.query = `SELECT * FROM ${this.name} LIMIT 50`;
+  initiate({ params }) {
+    this.name = params.name;
+    this.query = `SELECT * FROM ${this.name} LIMIT ${this.limit}`;
   }
   renderTableHeader() {
     return (
@@ -48,15 +49,16 @@ class Table extends Nullstack {
       </thead>
     );
   }
-  async deleteRecord({ __tableland, recordId }) {
+  async deleteRecord({ __tableland, recordId, instances }) {
     this.loading = true;
     this.err = "";
     try {
       await __tableland.write(parseDeleteData(this.name, recordId));
       this.data.rows = this.data.rows.filter((r) => r[0] != recordId);
+      instances.toast._showInfoToast(`Row deleted from table ${this.name}`);
     } catch (err) {
       this.err = err.message;
-      console.log(err);
+      instances.toast._showErrorToast(this.err);
     } finally {
       this.loading = false;
     }
@@ -73,15 +75,15 @@ class Table extends Nullstack {
       <>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex flex-row justify-between">
-            <button class="text-green-300 hover:text-green-100" onclick={redirect}>
-              Update
+            <button class="text-green-300 hover:text-green-100" onclick={redirect} disabled={this.loading}>
+              <UpdateIcon />
             </button>
           </div>
         </td>
         <td class="text-sm py-4 whitespace-nowrap">
           <div>
-            <button class="text-red-600 hover:text-red-400" onclick={deleteWrapper}>
-              X
+            <button class="text-red-600 hover:text-red-400" onclick={deleteWrapper} disabled={this.loading}>
+              <DeleteIcon />
             </button>
           </div>
         </td>
@@ -109,7 +111,7 @@ class Table extends Nullstack {
         <TableBody />
       </table>
     ) : (
-      <>Loading Data...</>
+      <Loader width={50} height={50} />
     );
   }
   redirectToInsertData({ router }) {
@@ -118,20 +120,21 @@ class Table extends Nullstack {
   render() {
     if (!this.name) return null;
     return (
-      <div class="w-full min-h-full pt-8 px-12">
-        <h1 class="text-2xl mb-6">{this.name}</h1>
-        <textarea name="query" id="query" cols="30" rows="2" class="bg-background w-full" bind={this.query} />
-        <button class="btn-primary my-4" onclick={this.runQuery} disabled={this.loading}>
-          {this.loading ? "Loading..." : "Run Query"}
-        </button>
-        <button class="btn-primary my-4" onclick={this.redirectToInsertData}>
-          Insert Data
-        </button>
+      <>
+        <TableNav />
+        <div class="w-full min-h-full pt-8 px-12">
+          <h1 class="text-2xl mb-6">{this.name}</h1>
+          <textarea name="query" id="query" cols="30" rows="2" class="bg-background w-full" bind={this.query} />
+          <button class="btn-primary my-4 w-32" onclick={this.runQuery} disabled={this.loading}>
+            Run Query
+          </button>
+          <button class="btn-primary my-4 w-32" onclick={this.redirectToInsertData}>
+            Insert Data
+          </button>
 
-        <h1 class="text-2xl mb-6">Data:</h1>
-        {this.err && <p class="text-red-600 my-4">{this.err}</p>}
-        {this.loading ? "Loading..." : <TableData />}
-      </div>
+          <div class="py-10">{this.loading ? <Loader width={50} height={50} /> : <TableData />}</div>
+        </div>
+      </>
     );
   }
 }

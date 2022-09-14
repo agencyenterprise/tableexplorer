@@ -1,11 +1,11 @@
 import Nullstack from "nullstack";
-import { TABLE_TYPES, parseUpdateData } from "../utils/TableTypes.js";
-
+import { TABLE_TYPES } from "../utils/TableTypes.js";
+import { parseUpdateData } from "../utils/SQLParser.js";
 class UpdateData extends Nullstack {
   loading = false;
   err = "";
   recordId = "";
-  tableName = "tableTestC_80001_1839";
+  tableName = "";
   schema = [];
   columns = [];
   tableInput = [];

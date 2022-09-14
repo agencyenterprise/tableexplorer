@@ -1,5 +1,4 @@
 import Nullstack from "nullstack";
-import querystring from "query-string";
 
 class Sidebar extends Nullstack {
   list = null;
@@ -12,11 +11,10 @@ class Sidebar extends Nullstack {
     this.getDatabases();
   }
 
-  renderListItem({ name }) {
-    const query = querystring.parse(window.location.search);
-    const style = query.name === name ? "color: #762fbe; font-weight: bold;" : "";
+  renderListItem({ name, params }) {
+    const style = params.name === name ? "color: #762fbe; font-weight: bold;" : "";
     return (
-      <a style={style} href={`/table?name=${name}`}>
+      <a style={style} href={`/schema?name=${name}`}>
         {name}
       </a>
     );
