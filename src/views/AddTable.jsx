@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import { TABLE_TYPES, TABLE_CONSTRAINTS } from "../utils/tableTypes";
+import { TABLE_TYPES, TABLE_CONSTRAINTS } from "../utils/TableTypes";
 import { parseCreateTable } from "../utils/SQLParser";
 
 class AddTable extends Nullstack {
