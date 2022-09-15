@@ -3,25 +3,30 @@ import { connect } from "@tableland/sdk";
 
 class Login extends Nullstack {
   async connectWallet(context) {
-    const tableland = await connect({
+    let tableland = await connect({
       network: "testnet",
       chain: "polygon-mumbai",
     });
     await tableland.siwe();
-    localStorage.setItem("@tltoken", tableland.token.token);
+    tableland.signerAddress = await tableland.signer.getAddress();
     context.__tableland = tableland;
+    localStorage.setItem("@tltoken", tableland.token.token);
+    localStorage.setItem("@tlAddress", context.__tableland.signerAddress);
   }
 
   async hydrate(context) {
     const token = localStorage.getItem("@tltoken");
-    if (token) {
+    const address = localStorage.getItem("@tlAddress");
+    if (token && address) {
       const tableland = await connect({
         network: "testnet",
         chain: "polygon-mumbai",
         token,
       });
 
-      context.__tableland = { ...tableland, token: { token: token } };
+      context.__tableland = tableland;
+      context.__tableland.token = { token: token };
+      context.__tableland.signerAddress = address;
     }
   }
 

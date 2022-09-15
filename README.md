@@ -8,6 +8,10 @@ Install the dependencies:
 
 `npm install`
 
+To run in dev mode, you must initialize a database, you can easily do it by:
+
+`npx prisma migrate dev --name init`
+
 Copy the environment sample to a .env file
 
 ```sh
