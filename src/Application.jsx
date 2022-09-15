@@ -9,7 +9,6 @@ import TableSchema from "./views/TableSchema";
 import InsertData from "./views/InsertData";
 import UpdateData from "./views/UpdateData";
 import Toast from "./components/Toast";
-import Header from "./components/Header";
 class Application extends Nullstack {
   prepare({ page }) {
     page.locale = "en-US";
