@@ -1,6 +1,5 @@
 export const TABLE_TYPES = ["text", "integer", "blob", "any"];
 export const TABLE_CONSTRAINTS = ["PRIMARY KEY", "NOT NULL", "UNIQUE"];
-
 export function inputTypeByType(type) {
   switch (type) {
     case "text":
@@ -15,3 +14,4 @@ export function inputTypeByType(type) {
       return "text";
   }
 }
+
