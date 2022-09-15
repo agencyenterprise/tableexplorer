@@ -126,9 +126,9 @@ class Table extends Nullstack {
   render() {
     if (!this.name) return null;
     return (
-      <div>
+      <div class="overflow-y-scroll">
         <TableNav />
-        <div class="w-full min-h-full pt-8 px-12">
+        <div class="w-full min-h-full pt-8 px-12 overflow-y-scroll">
           <h1 class="text-2xl mb-6">{this.name}</h1>
           <textarea name="query" id="query" cols="30" rows="2" class="bg-background w-full" bind={this.query} />
           <button class="btn-primary my-4 w-32" onclick={this.runQuery} disabled={this.loading}>

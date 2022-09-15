@@ -28,7 +28,7 @@ class Sidebar extends Nullstack {
 
   render() {
     return (
-      <aside class="w-full max-w-[350px] px-8 py-8 flex flex-col border-r h-full justify-between overflow-x-scroll">
+      <aside class="w-full max-w-[350px] px-6 pt-2 pb-6 flex flex-col border-r h-full justify-between overflow-x-scroll">
         <div class="flex flex-col gap-12 pr-3">
           <div class="flex justify-center py-0">
             <p class="flex flow-row">
@@ -38,17 +38,17 @@ class Sidebar extends Nullstack {
             </p>
           </div>
           {this.list && (
-            <nav class="flex flex-col gap-2 max-h-[300px] overflow-y-scroll border-solid border-slate-400 border py-2">
+            <nav class="flex flex-col gap-2 max-h-[300px] h-[300px] overflow-y-scroll border-solid border-slate-400 border py-2">
               {this.list.map((list) => (
                 <ListItem name={list.name} />
               ))}
             </nav>
           )}
-          <a href="/addTable" class="btn-primary">
+          <a href="/addTable" class="btn-primary w-56">
             + Add Table
           </a>
         </div>
-        <button class="btn-primary" onclick={this.logout}>
+        <button class="btn-primary w-56" onclick={this.logout}>
           Logout
         </button>
       </aside>
