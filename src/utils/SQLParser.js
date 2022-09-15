@@ -1,5 +1,3 @@
-// const columns = [{ type: "integer", name: "id", constraints: [] }];
-
 import { TABLE_TYPES } from "./TableTypes";
 
 export function parseCreateTable(columns) {
