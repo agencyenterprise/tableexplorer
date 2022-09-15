@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import { parseDeleteData } from "../utils/SQLParser";
+import { parseDeleteData, getPKColumn } from "../utils/SQLParser";
 import TableNav from "../components/TableNav";
 import UpdateIcon from "../components/Update.jsx";
 import DeleteIcon from "../components/Delete.jsx";
@@ -8,9 +8,10 @@ class Table extends Nullstack {
   name = "";
   query = "";
   data;
-  err = "";
   loading = false;
   limit = 50;
+  schema = [];
+  pkColumn = "";
   async runQuery({ __tableland }) {
     this.loading = true;
     const data = await __tableland.read(this.query);
@@ -23,12 +24,20 @@ class Table extends Nullstack {
 
     const data = await __tableland.read(this.query);
     this.data = data;
-    console.log(data);
+    this.getTableSchema();
   }
 
   initiate({ params }) {
     this.name = params.name;
     this.query = `SELECT * FROM ${this.name} LIMIT ${this.limit}`;
+  }
+  async getTableSchema({ __tableland, instances }) {
+    try {
+      this.schema = await __tableland.schema(this.name);
+      this.pkColumn = getPKColumn(this.schema.columns, this.name);
+    } catch (err) {
+      instances.toast._showErrorToast(err.message);
+    }
   }
   renderTableHeader() {
     return (
@@ -51,21 +60,18 @@ class Table extends Nullstack {
   }
   async deleteRecord({ __tableland, recordId, instances }) {
     this.loading = true;
-    this.err = "";
     try {
-      await __tableland.write(parseDeleteData(this.name, recordId));
+      await __tableland.write(parseDeleteData(this.name, recordId, this.pkColumn));
       this.data.rows = this.data.rows.filter((r) => r[0] != recordId);
       instances.toast._showInfoToast(`Row deleted from table ${this.name}`);
     } catch (err) {
-      this.err = err.message;
-      instances.toast._showErrorToast(this.err);
+      instances.toast._showErrorToast(err.message);
     } finally {
       this.loading = false;
     }
   }
   redirectToUpdatePage({ router, recordId }) {
-    console.log("redirect");
-    router.path = `/updateData?name=${this.name}&id=${recordId}`;
+    router.path = `/updateData?name=${this.name}&id=${recordId}&column=${this.pkColumn}`;
   }
   renderActionBtn({ row }) {
     const id = row[0];
@@ -74,14 +80,14 @@ class Table extends Nullstack {
     return (
       <>
         <td class="text-sm py-4 whitespace-nowrap">
-          <div class="flex flex-row justify-between">
+          <div class="flex items-center h-full">
             <button class="text-green-300 hover:text-green-100" onclick={redirect} disabled={this.loading}>
               <UpdateIcon />
             </button>
           </div>
         </td>
         <td class="text-sm py-4 whitespace-nowrap">
-          <div>
+          <div class="flex items-center h-full">
             <button class="text-red-600 hover:text-red-400" onclick={deleteWrapper} disabled={this.loading}>
               <DeleteIcon />
             </button>
@@ -120,7 +126,7 @@ class Table extends Nullstack {
   render() {
     if (!this.name) return null;
     return (
-      <>
+      <div>
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12">
           <h1 class="text-2xl mb-6">{this.name}</h1>
@@ -132,9 +138,11 @@ class Table extends Nullstack {
             Insert Data
           </button>
 
-          <div class="py-10">{this.loading ? <Loader width={50} height={50} /> : <TableData />}</div>
+          <div class="py-10 overflow-scroll border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
+            {this.loading ? <Loader width={50} height={50} /> : <TableData />}
+          </div>
         </div>
-      </>
+      </div>
     );
   }
 }

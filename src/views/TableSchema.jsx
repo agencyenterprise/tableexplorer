@@ -3,18 +3,27 @@ import TableNav from "../components/TableNav";
 
 class TableSchema extends Nullstack {
   name = "";
-  data;
+  data = { columns: [], table_constraints: [] };
 
-  async hydrate({ __tableland }) {
-    const data = await __tableland.schema(this.name);
-    this.data = data;
-    console.log(data);
+  async hydrate() {
+    this.getSchema();
   }
 
   initiate({ params }) {
     this.name = params.name;
   }
-
+  async getSchema({ __tableland, instances }) {
+    try {
+      const schema = await __tableland.schema(this.name);
+      if (schema?.message) {
+        throw new Error(schema.message);
+      }
+      this.data = schema;
+    } catch (err) {
+      instances.toast._showErrorToast(err.message);
+      console.log(err);
+    }
+  }
   render() {
     return (
       <>
@@ -38,7 +47,7 @@ class TableSchema extends Nullstack {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.data.columns.map((col, index) => (
+                  {this.data?.columns.map((col, index) => (
                     <tr class="border-b" style={index % 2 === 0 ? "background-color: #2d2c33" : ""}>
                       <td class="text-sm px-6 py-4 whitespace-nowrap">{col.name}</td>
                       <td class="text-sm px-6 py-4 whitespace-nowrap">{col.type}</td>

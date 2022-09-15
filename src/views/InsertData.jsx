@@ -1,11 +1,11 @@
 import Nullstack from "nullstack";
 import { TABLE_TYPES } from "../utils/TableTypes.js";
-import { parseInsertData } from "../utils/SQLParser";
+import { parseInsertData, getPKColumn } from "../utils/SQLParser";
+import Loader from "../components/Loader.jsx";
 
 class InsertData extends Nullstack {
   loading = false;
-  err = "";
-  tableName = "tableTestC_80001_1839";
+  tableName = "";
   schema = [];
   columns = [];
   tableInput = [];
@@ -14,33 +14,37 @@ class InsertData extends Nullstack {
     this.tableName = params.name;
   }
   async hydrate() {
-    await this.getTableSchema();
+    this.getTableSchema();
   }
   populateInputFields({ columns }) {
-    return columns.map((column) => {
-      column.value = "";
-      return column;
-    });
+    const pk = getPKColumn(columns);
+    const r = columns.reduce((acc, column) => {
+      if (column.name != pk) {
+        column.value = "";
+        return [...acc, column];
+      }
+      return acc;
+    }, []);
+    console.log("r");
+    console.log(r);
+    return r;
   }
-  async getTableSchema({ __tableland }) {
+  async getTableSchema({ __tableland, instances }) {
     try {
       const schema = await __tableland.schema(this.tableName);
       this.tableInput = this.populateInputFields({ columns: schema?.columns });
       this.schema = schema;
-      console.log(schema);
     } catch (err) {
-      this.err = err.message;
-      console.log(err);
+      instances.toast._showErrorToast(err.message);
     }
   }
-  async updateTable({ __tableland }) {
+  async insertData({ __tableland, instances }) {
     this.loading = true;
-    this.err = "";
     try {
       await __tableland.write(this.insertQuery);
+      instances.toast._showInfoToast(`Table ${this.tableName} updated with success!`);
     } catch (err) {
-      this.err = err.message;
-      console.log(err);
+      instances.toast._showErrorToast(err.message);
     } finally {
       this.loading = false;
     }
@@ -88,7 +92,7 @@ class InsertData extends Nullstack {
 
   render() {
     return (
-      <div class="w-full min-h-full pt-8 px-12">
+      <div class="w-full min-h-full pt-8 px-12 overflow-y-scroll pb-10">
         <h1 class="text-2xl mb-4 font-bold">Insert Data</h1>
         <textarea name="query" id="query" cols="30" rows="8" class="bg-background w-full" bind={this.insertQuery} disabled />
         <h2 class="text-xl mb-4 font-bold">Columns</h2>
@@ -97,9 +101,8 @@ class InsertData extends Nullstack {
             <Column index={index} />
           ))}
         </ul>
-        {this.err && <p class="text-red-600 my-4">{this.err}</p>}
-        <button class="btn-primary" disabled={this.loading} onclick={this.updateTable}>
-          {this.loading ? "Loading..." : "Insert Data"}
+        <button class="btn-primary h-12  w-32" disabled={this.loading} onclick={this.insertData}>
+          {this.loading ? <Loader width={38} height={38} /> : "Insert Data"}
         </button>
       </div>
     );
