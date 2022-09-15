@@ -60,11 +60,11 @@ class Table extends Nullstack {
       </thead>
     );
   }
-  async deleteRecord({ __tableland, recordId, instances }) {
+  async deleteRecord({ __tableland, recordId, recordIndex, instances }) {
     this.loading = true;
     try {
       await __tableland.write(parseDeleteData(this.name, recordId, this.pkColumn));
-      this.data.rows = this.data.rows.filter((r) => r[0] != recordId);
+      this.data.rows = this.data.rows.filter((r) => r[recordIndex] != recordId);
       instances.toast._showInfoToast(`Row deleted from table ${this.name}`);
     } catch (err) {
       instances.toast._showErrorToast(err.message);
@@ -76,7 +76,7 @@ class Table extends Nullstack {
     router.path = `/updateData?name=${this.name}&id=${recordId}&column=${this.pkColumn}`;
   }
   renderActionBtn({ row }) {
-    const deleteWrapper = () => this.deleteRecord({ recordId: row[this.pkColumnIndex] });
+    const deleteWrapper = () => this.deleteRecord({ recordId: row[this.pkColumnIndex], recordIndex: this.pkColumnIndex });
     const redirect = () => this.redirectToUpdatePage({ recordId: row[this.pkColumnIndex] });
     return (
       <>
