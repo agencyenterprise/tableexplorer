@@ -19,7 +19,7 @@
     "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
   },
   "dependencies": {
-    "@prisma/client": "4.3.1",
+    "@prisma/client": "^4.3.1",
     "@tableland/sdk": "^3.1.1",
     "buffer": "^6.0.3",
     "keccak": "^3.0.2",
