@@ -1,6 +1,5 @@
 import Nullstack from "nullstack";
 import TableNav from "../components/TableNav";
-import querystring from "query-string";
 import { TABLE_PERMISSIONS } from "../utils/TableTypes";
 
 class TablePermissions extends Nullstack {
@@ -22,9 +21,8 @@ class TablePermissions extends Nullstack {
     this.controller = await __tableland.getController(this.name);
   }
 
-  initiate() {
-    const query = querystring.parse(window.location.search);
-    this.name = query.name;
+  initiate({ params }) {
+    this.name = params.name;
   }
 
   parseRoleUpdate({ type }) {
