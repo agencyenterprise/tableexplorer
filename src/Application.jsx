@@ -18,12 +18,11 @@ class Application extends Nullstack {
       <head>
         <link href="https://fonts.gstatic.com" rel="preconnect" />
         <link href="https://fonts.googleapis.com/css2?family=Crete+Round&family=Roboto&display=swap" rel="stylesheet" />
-        {/* <link href="/styles.css" rel="stylesheet" /> */}
       </head>
     );
   }
 
-  render({ __tableland, instances }) {
+  render({ __tableland }) {
     return (
       <>
         <main class="w-full h-screen">
