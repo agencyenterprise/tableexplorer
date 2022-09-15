@@ -14,7 +14,6 @@ class Login extends Nullstack {
 
   async hydrate(context) {
     const token = localStorage.getItem("@tltoken");
-    console.log("Token");
     if (token) {
       const tableland = await connect({
         network: "testnet",

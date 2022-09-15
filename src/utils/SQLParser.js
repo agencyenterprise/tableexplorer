@@ -64,6 +64,11 @@ export const getPKColumn = (columns, tableName) => {
   return pkFields.name
 }
 
+export const getPKColumnIndex = (columns) => {
+  const index = (columns||[]).map(v => Object.values(v.constraints).indexOf("PRIMARY KEY") != -1).indexOf(true)
+  return index
+}
+
 export const hasColumnTypeAsColumnName = (columns) => {
   const table_types = TABLE_TYPES.map(v => v.toLocaleLowerCase())
   const hasColumnTypeAsName = (columns||[]).find(v => table_types.indexOf(v.name.toLocaleLowerCase()) != -1)

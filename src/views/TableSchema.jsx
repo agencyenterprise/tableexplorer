@@ -21,7 +21,6 @@ class TableSchema extends Nullstack {
       this.data = schema;
     } catch (err) {
       instances.toast._showErrorToast(err.message);
-      console.log(err);
     }
   }
   render() {

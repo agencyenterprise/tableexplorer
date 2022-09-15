@@ -24,8 +24,6 @@ class InsertData extends Nullstack {
       }
       return acc;
     }, []);
-    console.log("r");
-    console.log(r);
     return r;
   }
   async getTableSchema({ __tableland, instances }) {

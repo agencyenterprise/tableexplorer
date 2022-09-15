@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import { parseDeleteData, getPKColumn } from "../utils/SQLParser";
+import { parseDeleteData, getPKColumn, getPKColumnIndex } from "../utils/SQLParser";
 import TableNav from "../components/TableNav";
 import UpdateIcon from "../components/Update.jsx";
 import DeleteIcon from "../components/Delete.jsx";
@@ -12,6 +12,7 @@ class Table extends Nullstack {
   limit = 50;
   schema = [];
   pkColumn = "";
+  pkColumnIndex = ""
   async runQuery({ __tableland }) {
     this.loading = true;
     const data = await __tableland.read(this.query);
@@ -35,6 +36,7 @@ class Table extends Nullstack {
     try {
       this.schema = await __tableland.schema(this.name);
       this.pkColumn = getPKColumn(this.schema.columns, this.name);
+      this.pkColumnIndex = getPKColumnIndex(this.schema.columns)
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -74,9 +76,8 @@ class Table extends Nullstack {
     router.path = `/updateData?name=${this.name}&id=${recordId}&column=${this.pkColumn}`;
   }
   renderActionBtn({ row }) {
-    const id = row[0];
-    const deleteWrapper = () => this.deleteRecord({ recordId: id });
-    const redirect = () => this.redirectToUpdatePage({ recordId: id });
+    const deleteWrapper = () => this.deleteRecord({ recordId: row[this.pkColumnIndex] });
+    const redirect = () => this.redirectToUpdatePage({ recordId: row[this.pkColumnIndex] });
     return (
       <>
         <td class="text-sm py-4 whitespace-nowrap">
