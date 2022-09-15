@@ -18,19 +18,11 @@ class TableNav extends Nullstack {
   render() {
     return (
       <nav class="flex justify-around w-full bg-primary-dark">
-        <a
-          class="py-4 w-full text-center"
-          style={getActiveStyle("/schema", this.route)}
-          href={`/schema?${this.query}`}
-        >
-          Schema
-        </a>
-        <a
-          class="py-4 w-full text-center"
-          style={getActiveStyle("/table", this.route)}
-          href={`/table?${this.query}`}
-        >
+        <a class="py-4 w-full text-center" style={getActiveStyle("/table", this.route)} href={`/table?${this.query}`}>
           Data
+        </a>
+        <a class="py-4 w-full text-center" style={getActiveStyle("/schema", this.route)} href={`/schema?${this.query}`}>
+          Schema
         </a>
       </nav>
     );
