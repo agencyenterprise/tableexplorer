@@ -759,6 +759,10 @@ select {
   margin-bottom: 1.5rem;
 }
 
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
 .flex {
   display: flex;
 }
@@ -781,6 +785,10 @@ select {
 
 .h-12 {
   height: 3rem;
+}
+
+.h-40 {
+  height: 10rem;
 }
 
 .h-\[300px\] {

@@ -24,6 +24,13 @@ class TableNav extends Nullstack {
         <a class="py-4 w-full text-center" style={getActiveStyle("/schema", this.route)} href={`/schema?${this.query}`}>
           Schema
         </a>
+        <a
+          class="py-4 w-full text-center"
+          style={getActiveStyle("/permissions", this.route)}
+          href={`/permissions?${this.query}`}
+        >
+          Permissions
+        </a>
       </nav>
     );
   }

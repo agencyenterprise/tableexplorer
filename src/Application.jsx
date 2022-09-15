@@ -6,6 +6,7 @@ import Login from "./views/Login";
 import Table from "./views/Table";
 import "./styles.css";
 import TableSchema from "./views/TableSchema";
+import TablePermissions from "./views/TablePermissions";
 import InsertData from "./views/InsertData";
 import UpdateData from "./views/UpdateData";
 import Toast from "./components/Toast";
@@ -38,7 +39,8 @@ class Application extends Nullstack {
                   <AddTable route="/addTable" />
                   <InsertData route="/insertData" />
                   <UpdateData route="/updateData" />
-                </div>
+                  <TablePermissions route="/permissions" />
+              </div>
               </div>
               <Toast key="toast" />
               <div class="flex  justify-center border-t items-center h-12">

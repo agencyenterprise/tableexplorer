@@ -1,5 +1,6 @@
 const [server, client] = require("nullstack/webpack.config");
 const webpack = require("webpack");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 function customClient(...args) {
   const config = client(...args);
@@ -13,6 +14,7 @@ function customClient(...args) {
       Buffer: ["buffer", "Buffer"],
     })
   );
+  config.plugins.push(new MonacoWebpackPlugin());
 
   return config;
 }
