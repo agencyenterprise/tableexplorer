@@ -16,3 +16,4 @@ export function inputTypeByType(type) {
       return "text";
   }
 }
+

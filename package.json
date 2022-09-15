@@ -23,7 +23,6 @@
     "keccak": "^3.0.2",
     "monaco-editor": "^0.34.0",
     "monaco-editor-webpack-plugin": "^7.0.1",
-    "nullstack-tailwind": "^0.2.3",
-    "query-string": "^7.1.1"
+    "nullstack-tailwind": "^0.2.3"
   }
 }
