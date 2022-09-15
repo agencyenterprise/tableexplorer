@@ -783,12 +783,12 @@ select {
   height: 3rem;
 }
 
-.h-10 {
-  height: 2.5rem;
-}
-
 .h-\[300px\] {
   height: 300px;
+}
+
+.h-10 {
+  height: 2.5rem;
 }
 
 .max-h-\[300px\] {
@@ -807,28 +807,20 @@ select {
   width: 100%;
 }
 
-.w-36 {
-  width: 9rem;
+.w-56 {
+  width: 14rem;
 }
 
-.w-32 {
-  width: 8rem;
+.w-36 {
+  width: 9rem;
 }
 
 .w-24 {
   width: 6rem;
 }
 
-.w-40 {
-  width: 10rem;
-}
-
-.w-64 {
-  width: 16rem;
-}
-
-.w-56 {
-  width: 14rem;
+.w-32 {
+  width: 8rem;
 }
 
 .min-w-full {
@@ -971,14 +963,9 @@ select {
   padding-right: 0.75rem;
 }
 
-.px-8 {
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
-.py-8 {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .py-0 {
@@ -1001,18 +988,16 @@ select {
   padding-right: 3rem;
 }
 
-.px-6 {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
 .py-10 {
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
 }
 
-.py-6 {
-  padding-top: 1.5rem;
+.pt-2 {
+  padding-top: 0.5rem;
+}
+
+.pb-6 {
   padding-bottom: 1.5rem;
 }
 
@@ -1042,14 +1027,6 @@ select {
 
 .pt-10 {
   padding-top: 2.5rem;
-}
-
-.pt-2 {
-  padding-top: 0.5rem;
-}
-
-.pb-6 {
-  padding-bottom: 1.5rem;
 }
 
 .text-left {

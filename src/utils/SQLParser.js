@@ -19,10 +19,10 @@ export const parseValues = (column) => {
   let value = null;
   switch (column.type) {
     case "integer":
-      value = parseInt(column.value);
+      value = column.value ? parseInt(column.value) : "NULL";
       break;
     default:
-      value = `'${column.value}'`;
+      value = column.value ? `'${column.value}'` : "NULL";
   }
   return value;
 }
