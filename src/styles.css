@@ -720,10 +720,6 @@ select {
   --tw-backdrop-sepia:  ;
 }
 
-.absolute {
-  position: absolute;
-}
-
 .my-4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -754,6 +750,10 @@ select {
 
 .mb-6 {
   margin-bottom: 1.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
 }
 
 .flex {
@@ -794,10 +794,6 @@ select {
 
 .w-32 {
   width: 8rem;
-}
-
-.w-\[1px\] {
-  width: 1px;
 }
 
 .min-w-full {
@@ -868,8 +864,9 @@ select {
   border-bottom-width: 1px;
 }
 
-.border-l {
-  border-left-width: 1px;
+.bg-primary-dark {
+  --tw-bg-opacity: 1;
+  background-color: rgb(47 29 88 / var(--tw-bg-opacity));
 }
 
 .bg-background {
@@ -887,21 +884,6 @@ select {
   background-color: rgb(118 47 190 / var(--tw-bg-opacity));
 }
 
-.bg-black {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-
-.bg-background-tertiary {
-  --tw-bg-opacity: 1;
-  background-color: rgb(71 69 79 / var(--tw-bg-opacity));
-}
-
-.bg-primary-dark {
-  --tw-bg-opacity: 1;
-  background-color: rgb(47 29 88 / var(--tw-bg-opacity));
-}
-
 .p-2 {
   padding: 0.5rem;
 }
@@ -914,6 +896,11 @@ select {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .px-12 {
@@ -934,21 +921,6 @@ select {
 .px-6 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.py-12 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
 }
 
 .pt-8 {
