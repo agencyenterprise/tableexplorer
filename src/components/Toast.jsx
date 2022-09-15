@@ -9,10 +9,15 @@ class Toast extends Nullstack {
   toastMessage = "";
   showToast = false;
   type = "info";
-
+  parseErrorMessages({ message }) {
+    if (message.match(/user rejected transaction/)) {
+      return "Transaction canceled by the user!";
+    }
+    return message;
+  }
   _showErrorToast(message) {
     const parsedMessage = message ? message : "Unexpected Error!";
-    this._showToast(parsedMessage, "error");
+    this._showToast(this.parseErrorMessages({ message: parsedMessage }), "error");
   }
 
   _showInfoToast(message) {
