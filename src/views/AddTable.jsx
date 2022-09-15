@@ -34,6 +34,8 @@ class AddTable extends Nullstack {
         signerAddress: __tableland.signerAddress,
         tableName: this.tableToImport,
       });
+      await instances.sidebar.getDatabases();
+      instances.toast._showInfoToast(`Success!`);
     } catch (err) {
       console.log("Error", err);
     } finally {
@@ -159,7 +161,7 @@ class AddTable extends Nullstack {
           cols="30"
           rows="8"
           class="bg-background w-full"
-          disabled
+          // disabled
           bind={this.query}
         />
         <h2 class="text-xl mb-4 font-bold pt-5">Columns</h2>
