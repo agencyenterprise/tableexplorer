@@ -1,7 +1,8 @@
 import Nullstack from "nullstack";
 import { TABLE_TYPES, TABLE_CONSTRAINTS } from "../utils/TableTypes.js";
-import { parseCreateTable, hasPK } from "../utils/SQLParser.js";
-
+import { parseCreateTable, hasPK, hasColumnTypeAsColumnName } from "../utils/SQLParser.js";
+import DeleteIcon from "../components/Delete.jsx";
+import Loader from "../components/Loader.jsx";
 class AddTable extends Nullstack {
   prefix = "";
   query = "id integer";
@@ -16,23 +17,17 @@ class AddTable extends Nullstack {
       return;
     }
     this.loading = true;
-    this.err = "";
 
     try {
       hasPK(this.columns, this.prefix);
-      await __tableland.create(
-        this.query, // Table schema definition
-        {
-          prefix: this.prefix, // Optional `prefix` used to define a human-readable string
-        }
-      );
+      hasColumnTypeAsColumnName(this.columns);
+      await __tableland.create(this.query, {
+        prefix: this.prefix,
+      });
       await instances.sidebar.getDatabases();
-      this.loading = false;
       instances.toast._showInfoToast(`Table ${this.prefix} created with success!`);
     } catch (err) {
-      this.err = err.message;
-      console.error("err", err);
-      instances.toast._showErrorToast(this.err);
+      instances.toast._showErrorToast(err.message);
     } finally {
       this.loading = false;
     }
@@ -52,7 +47,7 @@ class AddTable extends Nullstack {
             this.updateQuery();
           }}
         >
-          X
+          <DeleteIcon />
         </button>
         <div class="flex">
           <input
@@ -65,22 +60,24 @@ class AddTable extends Nullstack {
               this.updateQuery();
             }}
           />
-          <select
-            class="bg-background"
-            name="type"
-            id={`type-${index}`}
-            value={this.columns[index].type}
-            onchange={({ event }) => {
-              this.columns[index].type = event.target.value;
-              this.updateQuery();
-            }}
-          >
-            {TABLE_TYPES.map((type) => (
-              <option class="bg-background" value={type}>
-                {type.toLocaleUpperCase()}
-              </option>
-            ))}
-          </select>
+          <div class="pl-3">
+            <select
+              class="bg-background"
+              name="type"
+              id={`type-${index}`}
+              value={this.columns[index].type}
+              onchange={({ event }) => {
+                this.columns[index].type = event.target.value;
+                this.updateQuery();
+              }}
+            >
+              {TABLE_TYPES.map((type) => (
+                <option class="bg-background" value={type}>
+                  {type.toLocaleUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         {TABLE_CONSTRAINTS.map((constraint) => (
           <div class="flex gap-1 items-center">
@@ -116,10 +113,10 @@ class AddTable extends Nullstack {
 
   render() {
     return (
-      <div class="w-full min-h-full pt-8 px-12">
+      <div class="w-full min-h-full pt-8 px-12 overflow-y-scroll pb-10">
         <h1 class="text-2xl mb-4 font-bold">Create Table</h1>
-        <textarea name="query" id="query" cols="30" rows="8" class="bg-background w-full" bind={this.query} />
-        <h2 class="text-xl mb-4 font-bold">Columns</h2>
+        <textarea name="query" id="query" cols="30" rows="8" class="bg-background w-full" disabled bind={this.query} />
+        <h2 class="text-xl mb-4 font-bold pt-5">Columns</h2>
         <ul class="flex flex-col gap-5 my-4">
           {this.columns.map((col, index) => (
             <Column index={index} />
@@ -136,13 +133,13 @@ class AddTable extends Nullstack {
         </button>
         <hr class="my-10" />
         <h2 class="text-xl mb-4 font-bold py-2">
-          <span class="border-dotted border-b" title="The table name will be something like YOUR_PREFIX_80001_1798">
+          <span class="border-dotted border-b" title="Prefix format: [A-Za-z0-9_]+">
             Table Prefix
           </span>
         </h2>
         <input type="text" bind={this.prefix} placeholder="Table Prefix" class="bg-background mb-4" />
-        <button class="btn-primary" disabled={this.loading} onclick={this.createTable}>
-          {this.loading ? "Loading..." : "Create Table"}{" "}
+        <button class="btn-primary h-12  w-36" disabled={this.loading} onclick={this.createTable}>
+          {this.loading ? <Loader width={38} height={38} /> : "Create Table"}
         </button>
       </div>
     );
