@@ -1,6 +1,25 @@
 const [server, client] = require("nullstack/webpack.config");
 const webpack = require("webpack");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+const path = require("path");
+
+function customServer(...args) {
+  const config = server(...args);
+
+  if (config.mode === "production") {
+    config.plugins.push(
+      new CopyWebpackPlugin({
+        patterns: ["./src/schema.prisma"],
+      })
+    );
+
+    config.externals = ["@prisma/client"];
+  }
+
+  return config;
+}
 
 function customClient(...args) {
   const config = client(...args);
@@ -14,9 +33,15 @@ function customClient(...args) {
       Buffer: ["buffer", "Buffer"],
     })
   );
-  config.plugins.push(new MonacoWebpackPlugin());
+  // config.plugins.push(
+  //   new MonacoWebpackPlugin({
+  //     languages: ["sql"],
+  //     features: ["wordHighlighter"],
+  //     globalAPI: false,
+  //   })
+  // );
 
   return config;
 }
 
-module.exports = [server, customClient];
+module.exports = [customServer, customClient];

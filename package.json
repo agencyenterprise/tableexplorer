@@ -12,16 +12,26 @@
     "tailwindcss": "^3.1.8"
   },
   "scripts": {
-    "start": "concurrently \"npm run start-tailwind\" \"npm run start-nullstack\"",
+    "start": "concurrently \"npm run start-tailwind\" \"npm run start-prisma\" \"npm run start-nullstack\"",
     "start-nullstack": "npx nullstack start",
-    "vercel-build": "npx nullstack build",
+    "vercel-build": "prisma generate  && npx nullstack build",
     "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
-    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
+    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css",
+    "start-prisma": "npx prisma generate --watch"
+  },
+  "prisma": {
+    "schema": "src/schema.prisma"
+  },
+  "pkg": {
+    "assets": [
+      "node_modules/.prisma/client/*.node"
+    ]
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",
     "@tableland/sdk": "^3.1.1",
     "buffer": "^6.0.3",
+    "copy-webpack-plugin": "^11.0.0",
     "keccak": "^3.0.2",
     "monaco-editor": "^0.34.0",
     "monaco-editor-webpack-plugin": "^7.0.1",

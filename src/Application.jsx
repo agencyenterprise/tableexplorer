@@ -7,8 +7,6 @@ import Table from "./views/Table";
 import "./styles.css";
 import TableSchema from "./views/TableSchema";
 import TablePermissions from "./views/TablePermissions";
-import InsertData from "./views/InsertData";
-import UpdateData from "./views/UpdateData";
 import Toast from "./components/Toast";
 class Application extends Nullstack {
   prepare({ page }) {
@@ -37,16 +35,15 @@ class Application extends Nullstack {
                   <Table route="/table" />
                   <TableSchema route="/schema" />
                   <AddTable route="/addTable" />
-                  <InsertData route="/insertData" />
-                  <UpdateData route="/updateData" />
                   <TablePermissions route="/permissions" />
-              </div>
+                </div>
               </div>
               <Toast key="toast" />
               <div class="flex  justify-center border-t items-center h-12">
                 <p class="text-center flex items-center">
-                  <a class="font-bold hover:underline text-white flex items-start px-3" target="blank" href="https://docs.tableland.xyz/">
-                    TABLELAND DOCS
+                  Made with <span class="pl-2 pr-1">❤️</span>
+                  <a href="https://ae.studio" target="_blank" class="px-1">
+                    by AE Studio
                   </a>
                 </p>
               </div>

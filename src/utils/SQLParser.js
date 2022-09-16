@@ -11,8 +11,12 @@ export function parseCreateTable(columns) {
   );
 
   query += cols.join(", ");
-
+  
   return query;
+}
+
+export const parseCreateTableSQL = (columns, tableName) => {
+  return `CREATE TABLE ${tableName} ${parseCreateTable(columns)}`
 }
 
 export const parseValues = (column) => {
@@ -75,4 +79,12 @@ export const hasColumnTypeAsColumnName = (columns) => {
   if (hasColumnTypeAsName) {
     throw new Error(`Column ${hasColumnTypeAsName.name} has an invalid column name. Column names should not be equal to column types`)
   }
+}
+export const parseTableName = (chainId, tableName) => {
+    return [(tableName || "").replace(new RegExp(`_[${chainId}]+[0-9A-Za-z]+`,"g"), "")].reduce((acc, v) => v ? v : acc, tableName)
+}
+
+
+export const isReadQuery = (query) => {
+  return !! ((query||"").toLocaleLowerCase().match(/select/) || []).length
 }
