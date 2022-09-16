@@ -54,7 +54,7 @@ class Sidebar extends Nullstack {
         instances.toast._showInfoToast(`Table imported with success!`);
       }
     } catch (err) {
-      instances.toast._showErrorToast(`Table imported with success!`);
+      instances.toast._showErrorToast(err.message);
     } finally {
       this.loading = false;
     }
