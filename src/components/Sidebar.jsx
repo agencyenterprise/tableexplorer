@@ -19,7 +19,9 @@ class Sidebar extends Nullstack {
         name: item.tableName,
         imported: true,
       }));
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
     return [];
   }
 
@@ -34,7 +36,9 @@ class Sidebar extends Nullstack {
         update: {},
       });
       return true;
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
     return false;
   }
   async importTable({ __tableland, instances }) {

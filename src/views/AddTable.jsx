@@ -14,37 +14,10 @@ class AddTable extends Nullstack {
 
   columns = [{ type: "integer", name: "id", constraints: [] }];
 
-  static async insertDbTable({ prisma, signerAddress, tableName }) {
-    try {
-      await prisma.tableUser.create({
-        data: {
-          tableName,
-          userAddress: signerAddress,
-        },
-      });
-      return true;
-    } catch (err) {}
-    return false;
-  }
   async hydrate() {
     try {
       this.updateQuery();
     } catch (err) {}
-  }
-  async importTable({ __tableland, instances }) {
-    this.loading = true;
-    try {
-      await this.insertDbTable({
-        signerAddress: __tableland.signerAddress,
-        tableName: this.tableToImport,
-      });
-      await instances.sidebar.getDatabases();
-      instances.toast._showInfoToast(`Table ${this.tableToImport} imported with success!`);
-    } catch (err) {
-      instances.toast._showErrorToast(err.message);
-    } finally {
-      this.loading = false;
-    }
   }
 
   async createTable({ __tableland, instances }) {
@@ -156,7 +129,7 @@ class AddTable extends Nullstack {
         <CodeEditor key="addtableeditor" value={this.parsedQuery} disabled={true} />
         <h2 class="text-xl mb-4 font-bold pt-5">Columns</h2>
         <ul class="flex flex-col gap-5 my-4">
-          {this.columns.map((col, index) => (
+          {this.columns.map((_, index) => (
             <Column index={index} />
           ))}
         </ul>

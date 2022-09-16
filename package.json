@@ -14,10 +14,12 @@
   "scripts": {
     "start": "concurrently \"npm run start-tailwind\" \"npm run start-nullstack\"",
     "start-nullstack": "npx nullstack start",
-    "vercel-build": "npm run prisma && npx nullstack build --mode=ssr",
+    "vercel-build": "npx prisma generate  && npx nullstack build --mode=ssr",
     "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
-    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css",
-    "prisma": "npx prisma migrate dev --name init"
+    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
+  },
+  "prisma": {
+    "schema": "src/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",
