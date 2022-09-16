@@ -31,7 +31,7 @@ function customClient(...args) {
       Buffer: ["buffer", "Buffer"],
     })
   );
-  //config.plugins.push(new MonacoWebpackPlugin());
+  config.plugins.push(new MonacoWebpackPlugin({languages: ["sql"]}));
 
   return config;
 }
