@@ -2,7 +2,7 @@ import Nullstack from "nullstack";
 
 class CodeEditor extends Nullstack {
   editor = null;
-  hydrate({ value, onchange, disabled, instances }) {
+  hydrate({ value, onchange, disabled }) {
     try {
       const monaco = require("monaco-editor/esm/vs/editor/editor.api");
       this.editor = monaco.editor.create(document.getElementById("code-editor"), {
@@ -16,7 +16,7 @@ class CodeEditor extends Nullstack {
         onchange && onchange({ query: this.editor.getValue() });
       });
     } catch (err) {
-      instances.toast._showErrorToast(err.message);
+      console.log(err);
     }
   }
   getEditorValue() {
