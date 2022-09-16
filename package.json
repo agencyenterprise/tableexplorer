@@ -12,11 +12,12 @@
     "tailwindcss": "^3.1.8"
   },
   "scripts": {
-    "start": "concurrently \"npm run start-tailwind\" \"npm run start-nullstack\"",
+    "start": "concurrently \"npm run start-tailwind\" \"npm run start-prisma\" \"npm run start-nullstack\"",
     "start-nullstack": "npx nullstack start",
     "vercel-build": "npx prisma generate  && npx nullstack build --mode=ssr",
     "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
-    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
+    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css",
+    "start-prisma": "npx prisma generate --watch"
   },
   "prisma": {
     "schema": "src/schema.prisma"
