@@ -1,12 +1,13 @@
 import Nullstack from "nullstack";
 import Sidebar from "./components/Sidebar";
-import AddTable from "./views/AddTable";
+/* import AddTable from "./views/AddTable";
+import Table from "./views/Table";
+import TableSchema from "./views/TableSchema";
+import TablePermissions from "./views/TablePermissions"; */
 import Home from "./views/Home";
 import Login from "./views/Login";
-import Table from "./views/Table";
+
 import "./styles.css";
-import TableSchema from "./views/TableSchema";
-import TablePermissions from "./views/TablePermissions";
 import Toast from "./components/Toast";
 class Application extends Nullstack {
   prepare({ page }) {
@@ -32,10 +33,10 @@ class Application extends Nullstack {
                 <Sidebar key="sidebar" />
                 <div class="flex flex-col w-full h-full" style="height: calc(100% - 50px); min-width: calc(100% - 300px);">
                   <Home route="/" />
-                  <Table route="/table" />
+                  {/* <Table route="/table" />
                   <TableSchema route="/schema" />
                   <AddTable route="/addTable" />
-                  <TablePermissions route="/permissions" />
+                  <TablePermissions route="/permissions" /> */}
                 </div>
               </div>
               <Toast key="toast" />
