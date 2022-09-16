@@ -16,7 +16,8 @@
     "start-nullstack": "npx nullstack start",
     "vercel-build": "npx nullstack build",
     "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
-    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
+    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css",
+    "prisma": "npx prisma migrate dev --name init"
   },
   "dependencies": {
     "@prisma/client": "^4.3.1",
