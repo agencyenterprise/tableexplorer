@@ -1,7 +1,7 @@
 const [server, client] = require("nullstack/webpack.config");
 const webpack = require("webpack");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 function customServer(...args) {
   const config = server(...args);
