@@ -1,11 +1,13 @@
 import Nullstack from "nullstack";
 import TableNav from "../components/TableNav";
-
+import { parseTableName } from "../utils/SQLParser";
 class TableSchema extends Nullstack {
   name = "";
   data = { columns: [], table_constraints: [] };
 
-  async hydrate() {
+  async hydrate({ __tableland }) {
+    this.options = __tableland?.options;
+
     this.getSchema();
   }
 
@@ -25,10 +27,10 @@ class TableSchema extends Nullstack {
   }
   render() {
     return (
-      <>
+      <div class="h-full overflow-y-scroll">
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12">
-          <h1 class="text-2xl mb-6">{this.name} Schema</h1>
+          <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId, this.name)}</h1>
           {this.data && (
             <>
               <table class="min-w-full">
@@ -70,7 +72,7 @@ class TableSchema extends Nullstack {
             </>
           )}
         </div>
-      </>
+      </div>
     );
   }
 }
