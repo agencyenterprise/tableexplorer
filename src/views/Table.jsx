@@ -1,9 +1,12 @@
 import Nullstack from "nullstack";
-import { parseDeleteData, getPKColumn, getPKColumnIndex } from "../utils/SQLParser";
+import { parseDeleteData, getPKColumn, getPKColumnIndex, parseTableName, parseInsertData, isReadQuery, parseUpdateData } from "../utils/SQLParser";
 import TableNav from "../components/TableNav";
 import UpdateIcon from "../components/Update.jsx";
 import DeleteIcon from "../components/Delete.jsx";
+import ReadIcon from "../components/Read.jsx";
+import InsertIcon from "../components/Insert.jsx";
 import Loader from "../components/Loader.jsx";
+import CodeEditor from "../components/CodeEditor";
 class Table extends Nullstack {
   name = "";
   query = "";
@@ -12,17 +15,49 @@ class Table extends Nullstack {
   limit = 50;
   schema = [];
   pkColumn = "";
-  pkColumnIndex = ""
-  async runQuery({ __tableland }) {
-    this.loading = true;
-    const data = await __tableland.read(this.query);
-    this.data = data;
-    this.loading = false;
+  pkColumnIndex = "";
+  tableInput = "";
+  insertString = "Insert";
+  readString = "Read";
+  readOrInsert = "";
+  async readQuery({ __tableland, instances }) {
+    try {
+      const data = await __tableland.read(this.query);
+      this.data = data;
+    } catch (err) {
+      instances.toast._showErrorToast(err.message);
+    }
   }
-
+  async runQuery({ instances }) {
+    this.loading = true;
+    try {
+      this.query = instances.code_editor.getEditorValue();
+      const isRead = isReadQuery(this.query);
+      if (isRead) {
+        await this.readQuery();
+      } else {
+        await this.insertData();
+        this.updateToBaseQuery();
+      }
+    } catch (err) {
+      instances.toast._showErrorToast(err.message);
+    } finally {
+      this.loading = false;
+    }
+  }
+  async insertData({ __tableland, instances }) {
+    try {
+      await __tableland.write(this.query);
+      const data = await __tableland.read(this.baseQuery());
+      this.data = data;
+      instances.toast._showInfoToast(`Table ${this.name} updated with success!`);
+    } catch (err) {
+      instances.toast._showErrorToast(err.message);
+    }
+  }
   async hydrate({ __tableland }) {
     if (!this.name) return;
-
+    this.options = __tableland?.options;
     const data = await __tableland.read(this.query);
     this.data = data;
     this.getTableSchema();
@@ -30,13 +65,18 @@ class Table extends Nullstack {
 
   initiate({ params }) {
     this.name = params.name;
-    this.query = `SELECT * FROM ${this.name} LIMIT ${this.limit}`;
+    this.readOrInsert = this.insertString;
+    this.query = this.baseQuery();
+  }
+  baseQuery() {
+    return `SELECT * FROM ${this.name} LIMIT ${this.limit}`;
   }
   async getTableSchema({ __tableland, instances }) {
     try {
       this.schema = await __tableland.schema(this.name);
       this.pkColumn = getPKColumn(this.schema.columns, this.name);
-      this.pkColumnIndex = getPKColumnIndex(this.schema.columns)
+      this.pkColumnIndex = getPKColumnIndex(this.schema.columns);
+      this.tableInput = this.populateInputFields({ columns: this.schema?.columns });
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -77,12 +117,12 @@ class Table extends Nullstack {
   }
   renderActionBtn({ row }) {
     const deleteWrapper = () => this.deleteRecord({ recordId: row[this.pkColumnIndex], recordIndex: this.pkColumnIndex });
-    const redirect = () => this.redirectToUpdatePage({ recordId: row[this.pkColumnIndex] });
+    const updateQuery = () => this.addUpdateQuery({ recordId: row[this.pkColumnIndex], pkColumn: this.pkColumn, row: row });
     return (
       <>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex items-center h-full">
-            <button class="text-green-300 hover:text-green-100" onclick={redirect} disabled={this.loading}>
+            <button class="text-green-300 hover:text-green-100" onclick={updateQuery} disabled={this.loading}>
               <UpdateIcon />
             </button>
           </div>
@@ -121,23 +161,67 @@ class Table extends Nullstack {
       <Loader width={50} height={50} />
     );
   }
-  redirectToInsertData({ router }) {
-    router.path = "/insertData";
+  insertOrRead() {
+    if (this.readOrInsert == this.insertString) {
+      this.addInsertQuery();
+      this.readOrInsert = this.readString;
+    } else {
+      this.updateToBaseQuery();
+      this.readOrInsert = this.insertString;
+    }
+  }
+  onEditorChange({ query }) {
+    this.query = query;
+  }
+  addInsertQuery({ instances }) {
+    const removePkColumns = () =>
+      Object.entries(this.tableInput).reduce((acc, v) => {
+        return v[1].name == this.pkColumn ? acc : [{ ...v[1], value: "" }, ...acc];
+      }, []);
+    const pkColumn = () =>
+      Object.entries(this.tableInput).reduce((acc, v) => {
+        return v[1].name != this.pkColumn ? acc : [{ ...v[1], value: "" }, ...acc];
+      }, []);
+    const filteredColumns = removePkColumns();
+    const columnInputs = filteredColumns.length ? filteredColumns : pkColumn();
+    this.query = parseInsertData(columnInputs, this.name);
+    instances.code_editor.setEditorValue({ query: this.query });
+  }
+  addUpdateQuery({ instances, recordId, pkColumn, row }) {
+    const updateInput = Object.keys(this.tableInput).map((v) => {
+      this.tableInput[v].value = row[v];
+      return this.tableInput[v];
+    });
+    this.query = parseUpdateData(updateInput, this.name, recordId, pkColumn);
+    instances.code_editor.setEditorValue({ query: this.query });
+  }
+  updateToBaseQuery({ instances }) {
+    instances.code_editor.setEditorValue({ query: this.baseQuery() });
+  }
+  populateInputFields({ columns }) {
+    const r = columns.reduce((acc, column, index) => {
+      column.value = "";
+      column.index = index;
+      return [...acc, column];
+    }, []);
+    return r;
   }
   render() {
     if (!this.name) return null;
     return (
-      <div class="overflow-y-scroll">
+      <div class="overflow-y-scroll h-full">
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12 overflow-y-scroll">
-          <h1 class="text-2xl mb-6">{this.name}</h1>
-          <textarea name="query" id="query" cols="30" rows="2" class="bg-background w-full" bind={this.query} />
-          <button class="btn-primary my-4 w-32" onclick={this.runQuery} disabled={this.loading}>
-            Run Query
-          </button>
-          <button class="btn-primary my-4 w-32" onclick={this.redirectToInsertData}>
-            Insert Data
-          </button>
+          <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId, this.name)}</h1>
+          <CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} />
+          <div class="flex flex-col items-start justify-start">
+            <span class="my-4 w-32 cursor-pointer" onclick={this.insertOrRead} title={this.readOrInsert}>
+              {this.readOrInsert == this.readString ? <ReadIcon width={25} height={25} /> : <InsertIcon width={25} height={25} />}
+            </span>
+            <button class="btn-primary my-4 w-32" onclick={this.runQuery} disabled={this.loading}>
+              Run Query
+            </button>
+          </div>
 
           <div class="py-10 overflow-scroll border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
             {this.loading ? <Loader width={50} height={50} /> : <TableData />}
