@@ -44,7 +44,7 @@ class AddTable extends Nullstack {
 
   updateQuery({ instances }) {
     this.query = parseCreateTable(this.columns);
-    this.parsedQuery = parseCreateTableSQL(this.columns, this.name || '""');
+    this.parsedQuery = parseCreateTableSQL(this.columns, this.prefix || '""');
     instances.addtableeditor.setEditorValue({ query: this.parsedQuery });
   }
 
