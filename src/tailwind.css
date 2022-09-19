@@ -1,14 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
   --tw-text-opacity: 1;
-  color: rgb(232 234 237 / var(--tw-text-opacity));
-  font-family: Roboto, sans-serif;
+  color: #fff;
+  font-family: "Roboto Mono", monospace;
   min-height: 100vh;
   --tw-bg-opacity: 1;
-  background-color: rgb(29 27 35 / var(--tw-bg-opacity));
+  background-color: #050505;
 }
 
 a {
@@ -16,5 +17,84 @@ a {
 }
 
 .btn-primary {
-  @apply bg-primary hover:underline px-6 py-2 rounded-md flex justify-center items-center;
+  @apply bg-button-primary hover:bg-button-hover hover:no-underline text-black px-6 py-2 rounded-md flex justify-center items-center;
+}
+
+input {
+  @apply border-input-placeholder text-white rounded-md;
+}
+
+input:focus {
+  @apply border-white;
+}
+
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  @apply text-input-placeholder;
+}
+
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  @apply text-input-placeholder;
+}
+
+::-ms-input-placeholder {
+  /* Microsoft Edge */
+  @apply text-input-placeholder;
+}
+
+input[type="checkbox"] {
+  all: unset;
+  border: 1px solid #fff;
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+input[type="checkbox"]:checked {
+  width: 10px;
+  height: 10px;
+  @apply bg-checkbox-checked;
+}
+
+input[type="checkbox"]:hover {
+  @apply text-checkbox-checked;
+}
+
+input[type="checkbox"]:focus {
+  @apply text-checkbox-checked;
+}
+
+hr {
+  @apply border-[#626262];
+}
+
+.heart {
+  display: inline-block;
+  height: 10px;
+  margin: 0 10px;
+  position: relative;
+  top: 0;
+  transform: rotate(-45deg);
+  width: 10px;
+  @apply bg-button-primary;
+}
+
+.heart:before,
+.heart:after {
+  content: "";
+  border-radius: 50%;
+  height: 10px;
+  position: absolute;
+  width: 10px;
+  @apply bg-button-primary;
+}
+
+.heart:before {
+  top: -5px;
+  left: 0;
+}
+
+.heart:after {
+  left: 5px;
+  top: 0;
 }

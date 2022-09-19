@@ -124,7 +124,7 @@ class AddTable extends Nullstack {
 
   render() {
     return (
-      <div class="w-full min-h-full pt-8 px-12 overflow-y-scroll pb-10">
+      <div class="w-full min-h-full pt-8 px-12 overflow-y-auto pb-10">
         <h1 class="text-2xl mb-4 font-bold">Create Table</h1>
         <CodeEditor key="addtableeditor" value={this.parsedQuery} disabled={true} />
         <h2 class="text-xl mb-4 font-bold pt-5">Columns</h2>
@@ -149,7 +149,7 @@ class AddTable extends Nullstack {
           </span>
         </h2>
         <input type="text" bind={this.prefix} placeholder="Table Prefix" class="bg-background mb-4" oninput={this.updateQuery} />
-        <button class="btn-primary h-12  w-36" disabled={this.loading} onclick={this.createTable}>
+        <button class="btn-primary h-12 w-44" disabled={this.loading} onclick={this.createTable}>
           {this.loading ? <Loader width={38} height={38} /> : "Create Table"}
         </button>
       </div>
