@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-
+import Toastify from "toastify-js";
 const typeClasses = {
   info: "bg-primary text-white",
   error: "bg-red-600 text-white",
@@ -25,22 +25,26 @@ class Toast extends Nullstack {
   }
 
   _showToast(message, type) {
-    this.toastMessage = `${message}`;
-    this.type = type;
-    this.showToast = true;
-    const _this = this;
-
-    setTimeout(() => {
-      _this.showToast = false;
-    }, 5000);
+    Toastify({
+      text: message,
+      duration: 5000,
+      newWindow: true,
+      close: false,
+      gravity: "top",
+      position: "right",
+      stopOnFocus: true,
+      style: {
+        background: type == "error" ? "#C73535" : "#68DF98",
+        "min-width": "300px",
+        "text-align": "left",
+        "padding-right": "30px",
+      },
+      onClick: function () {},
+    }).showToast();
   }
 
   render() {
-    return (
-      <div class={"z-50 font-bold p-6 w-full fixed bottom-0 left-0 " + typeClasses[this.type] + (this.showToast ? "" : " hidden")}>
-        {this.toastMessage}
-      </div>
-    );
+    return <></>;
   }
 }
 

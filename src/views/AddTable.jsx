@@ -52,7 +52,7 @@ class AddTable extends Nullstack {
     return (
       <li class="flex gap-5 items-center">
         <button
-          class="hover:underline cursor-pointer text-red-900"
+          class="hover:underline cursor-pointer text-red-standard"
           onclick={() => {
             this.columns.splice(index, 1);
             this.updateQuery();

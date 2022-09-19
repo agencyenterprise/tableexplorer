@@ -122,14 +122,14 @@ class Table extends Nullstack {
       <>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex items-center h-full">
-            <button class="text-green-300 hover:text-green-100" onclick={updateQuery} disabled={this.loading}>
+            <button class="text-green-standard hover:text-green-100" onclick={updateQuery} disabled={this.loading}>
               <UpdateIcon />
             </button>
           </div>
         </td>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex items-center h-full">
-            <button class="text-red-600 hover:text-red-400" onclick={deleteWrapper} disabled={this.loading}>
+            <button class="text-red-standard hover:text-red-400" onclick={deleteWrapper} disabled={this.loading}>
               <DeleteIcon />
             </button>
           </div>

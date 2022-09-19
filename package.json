@@ -35,6 +35,7 @@
     "keccak": "^3.0.2",
     "monaco-editor": "^0.34.0",
     "monaco-editor-webpack-plugin": "^7.0.1",
-    "nullstack-tailwind": "^0.2.3"
+    "nullstack-tailwind": "^0.2.3",
+    "toastify-js": "^1.12.0"
   }
 }
