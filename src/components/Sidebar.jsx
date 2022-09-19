@@ -45,7 +45,7 @@ class Sidebar extends Nullstack {
     this.loading = true;
     this.showInput = !this.showInput;
     try {
-      if (!this.showInput) {
+      if (!this.showInput && this.tableToImport) {
         await this.insertDbTable({
           signerAddress: __tableland.signerAddress,
           tableName: this.tableToImport,
