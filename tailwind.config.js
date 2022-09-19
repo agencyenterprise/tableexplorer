@@ -15,6 +15,8 @@ module.exports = {
         "background-tertiary": "#47454f",
         "background-quaternary": "#3b3944",
         white: "#e8eaed",
+        "red-standard": "#C73535",
+        "green-standard": "#68DF98"
       },
     },
   },
