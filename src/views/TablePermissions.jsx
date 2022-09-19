@@ -77,14 +77,14 @@ class TablePermissions extends Nullstack {
   }
   render() {
     return (
-      <div class="overflow-y-scroll h-full">
+      <div class="overflow-y-auto h-full">
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12">
           <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId, this.name)}</h1>
           {/* <textarea name="query" id="query" cols="30" rows="2" class="bg-background w-full mb-2" bind={this.query} /> */}
           <CodeEditor key="permissions_editor" value={this.query} onchange={this.onEditorChange} disabled={true} />
           <div class="py-5">
-            <button class="btn-primary h-12  w-32" disabled={this.loadingQuery} onclick={this.runQuery}>
+            <button class="btn-primary h-12  w-44" disabled={this.loadingQuery} onclick={this.runQuery}>
               {this.loadingQuery ? <Loader width={38} height={38} /> : "Run query"}
             </button>
           </div>
