@@ -209,9 +209,9 @@ class Table extends Nullstack {
   render() {
     if (!this.name) return null;
     return (
-      <div class="overflow-y-scroll h-full">
+      <div class="overflow-y-auto h-full">
         <TableNav />
-        <div class="w-full min-h-full pt-8 px-12 overflow-y-scroll">
+        <div class="w-full min-h-full pt-8 px-12 overflow-y-auto">
           <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId, this.name)}</h1>
           <CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} />
           <div class="flex flex-col items-start justify-start">
@@ -223,7 +223,7 @@ class Table extends Nullstack {
             </button>
           </div>
 
-          <div class="py-10 overflow-scroll border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
+          <div class="py-10 overflow-auto border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
             {this.loading ? <Loader width={50} height={50} /> : <TableData />}
           </div>
         </div>

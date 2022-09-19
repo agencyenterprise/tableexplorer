@@ -77,7 +77,7 @@ class TablePermissions extends Nullstack {
   }
   render() {
     return (
-      <div class="overflow-y-scroll h-full">
+      <div class="overflow-y-auto h-full">
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12">
           <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId, this.name)}</h1>

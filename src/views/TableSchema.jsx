@@ -27,7 +27,7 @@ class TableSchema extends Nullstack {
   }
   render() {
     return (
-      <div class="h-full overflow-y-scroll">
+      <div class="h-full overflow-y-auto">
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12">
           <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId, this.name)}</h1>

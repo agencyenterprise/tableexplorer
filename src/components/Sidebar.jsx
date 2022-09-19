@@ -100,7 +100,7 @@ class Sidebar extends Nullstack {
 
   render({ __tableland }) {
     return (
-      <aside class="w-full max-w-[350px] px-6 pt-2 pb-6 flex flex-col border-r h-full justify-between overflow-x-scroll">
+      <aside class="w-full max-w-[350px] px-6 pt-2 pb-6 flex flex-col border-r h-full justify-between overflow-x-auto">
         <div class="flex flex-col gap-12 pr-3">
           <a href="/">
             <div class="flex justify-center items-center flex-col py-0" title={__tableland.signerAddress}>
@@ -115,7 +115,7 @@ class Sidebar extends Nullstack {
           </a>
 
           {this.tables && (
-            <nav class="flex flex-col gap-2 max-h-[300px] h-[300px] overflow-y-scroll border-solid border-slate-400 border py-2">
+            <nav class="flex flex-col gap-2 max-h-[300px] h-[300px] overflow-y-auto border-solid border-slate-400 border py-2">
               {this.tables.map((list) => (
                 <ListItem name={list.name} />
               ))}

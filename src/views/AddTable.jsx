@@ -124,7 +124,7 @@ class AddTable extends Nullstack {
 
   render() {
     return (
-      <div class="w-full min-h-full pt-8 px-12 overflow-y-scroll pb-10">
+      <div class="w-full min-h-full pt-8 px-12 overflow-y-auto pb-10">
         <h1 class="text-2xl mb-4 font-bold">Create Table</h1>
         <CodeEditor key="addtableeditor" value={this.parsedQuery} disabled={true} />
         <h2 class="text-xl mb-4 font-bold pt-5">Columns</h2>
