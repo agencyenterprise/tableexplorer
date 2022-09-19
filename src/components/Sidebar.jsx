@@ -2,6 +2,7 @@ import Nullstack from "nullstack";
 import HomeIcon from "./Home";
 import { parseTableName } from "../utils/SQLParser";
 import Loader from "../components/Loader";
+import TablelandLogo from "../assets/TablelandLogo";
 class Sidebar extends Nullstack {
   tables = [];
   showInput = false;
@@ -28,7 +29,9 @@ class Sidebar extends Nullstack {
   static async insertDbTable({ prisma, signerAddress, tableName }) {
     try {
       await prisma.tableUser.upsert({
-        where: { tableName_userAddress: { tableName, userAddress: signerAddress } },
+        where: {
+          tableName_userAddress: { tableName, userAddress: signerAddress },
+        },
         create: {
           tableName,
           userAddress: signerAddress,
@@ -85,7 +88,8 @@ class Sidebar extends Nullstack {
   }
 
   renderListItem({ name, params }) {
-    const style = params.name === name ? "color: #762fbe; font-weight: bold;" : "";
+    const style =
+      params.name === name ? "color: #762fbe; font-weight: bold;" : "";
     return (
       <a style={style} href={`/table?name=${name}`} class="px-3">
         {parseTableName(this.options?.chainId, name)}
@@ -103,13 +107,19 @@ class Sidebar extends Nullstack {
       <aside class="w-full max-w-[350px] px-6 pt-2 pb-6 flex flex-col border-r h-full justify-between overflow-x-auto">
         <div class="flex flex-col gap-12 pr-3">
           <a href="/">
-            <div class="flex justify-center items-center flex-col py-0" title={__tableland.signerAddress}>
-              <p class="flex flow-row">
-                <HomeIcon class="pr-3" width={35} height={35} />
-              </p>
+            <div
+              class="flex justify-center items-center flex-col py-0"
+              title={__tableland.signerAddress}
+            >
+              <div class="my-2">
+                <TablelandLogo />
+              </div>
               {[
                 __tableland.signerAddress.substring(0, 4),
-                __tableland.signerAddress.substring(__tableland.signerAddress.length - 5, __tableland.signerAddress - 1),
+                __tableland.signerAddress.substring(
+                  __tableland.signerAddress.length - 5,
+                  __tableland.signerAddress - 1
+                ),
               ].join("...")}
             </div>
           </a>
@@ -125,9 +135,23 @@ class Sidebar extends Nullstack {
             + Add Table
           </a>
           <div class="py-1">
-            <input type="text" bind={this.tableToImport} placeholder="Table name" class="bg-background mb-4 w-56" hidden={!this.showInput} />
-            <button class="btn-primary w-56" onclick={this.importTable} disabled={this.loading}>
-              {this.loading ? <Loader width={38} height={38} /> : "Import Table"}
+            <input
+              type="text"
+              bind={this.tableToImport}
+              placeholder="Table name"
+              class="bg-background mb-4 w-56"
+              hidden={!this.showInput}
+            />
+            <button
+              class="btn-primary w-56"
+              onclick={this.importTable}
+              disabled={this.loading}
+            >
+              {this.loading ? (
+                <Loader width={38} height={38} />
+              ) : (
+                "Import Table"
+              )}
             </button>
           </div>
         </div>

@@ -4,7 +4,7 @@ class TablelandLogo extends Nullstack {
   render() {
     return (
       <svg
-        width="296"
+        width="200"
         height="21"
         viewBox="0 0 296 21"
         fill="none"

@@ -149,7 +149,7 @@ class AddTable extends Nullstack {
           </span>
         </h2>
         <input type="text" bind={this.prefix} placeholder="Table Prefix" class="bg-background mb-4" oninput={this.updateQuery} />
-        <button class="btn-primary h-12  w-36" disabled={this.loading} onclick={this.createTable}>
+        <button class="btn-primary h-12 w-44" disabled={this.loading} onclick={this.createTable}>
           {this.loading ? <Loader width={38} height={38} /> : "Create Table"}
         </button>
       </div>

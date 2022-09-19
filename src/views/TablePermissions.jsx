@@ -84,7 +84,7 @@ class TablePermissions extends Nullstack {
           {/* <textarea name="query" id="query" cols="30" rows="2" class="bg-background w-full mb-2" bind={this.query} /> */}
           <CodeEditor key="permissions_editor" value={this.query} onchange={this.onEditorChange} disabled={true} />
           <div class="py-5">
-            <button class="btn-primary h-12  w-32" disabled={this.loadingQuery} onclick={this.runQuery}>
+            <button class="btn-primary h-12  w-44" disabled={this.loadingQuery} onclick={this.runQuery}>
               {this.loadingQuery ? <Loader width={38} height={38} /> : "Run query"}
             </button>
           </div>

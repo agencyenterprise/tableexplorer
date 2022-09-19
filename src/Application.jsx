@@ -49,12 +49,15 @@ class Application extends Nullstack {
               </div>
               <Toast key="toast" />
               <div class="flex  justify-center border-t items-center h-12">
-                <p class="text-center flex items-center">
-                  Made with <span class="pl-2 pr-1">❤️</span>
+                <div class="flex relative items-baseline">
+                  <p class="text-center flex items-center relative">
+                    Made with{" "}
+                  </p>
+                  <span class="heart" />
                   <a href="https://ae.studio" target="_blank" class="px-1">
                     by AE Studio
                   </a>
-                </p>
+                </div>
               </div>
             </div>
           ) : (
