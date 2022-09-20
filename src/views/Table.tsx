@@ -9,7 +9,7 @@ import {
   parseUpdateData,
 } from "../utils/SQLParser";
 import TableNav from "../components/TableNav";
-import UpdateIcon from "../components/Update";
+import UpdateIcon from "../assets/Update";
 import DeleteIcon from "../assets/Delete";
 import ReadIcon from "../assets/Read";
 import InsertIcon from "../assets/Insert";
