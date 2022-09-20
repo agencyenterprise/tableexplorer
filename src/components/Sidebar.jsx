@@ -3,6 +3,7 @@ import HomeIcon from "./Home";
 import { parseTableName } from "../utils/SQLParser";
 import Loader from "../components/Loader";
 import TablelandLogo from "../assets/TablelandLogo";
+import DeleteIcon from "./Delete";
 class Sidebar extends Nullstack {
   tables = [];
   showInput = false;
@@ -25,6 +26,20 @@ class Sidebar extends Nullstack {
     }
     return [];
   }
+  static async deleteDbTable({prisma, signerAddress, tableName}) {
+    try {
+      await prisma.tableUser.delete({
+        where: {
+          tableName_userAddress: {tableName, userAddress: signerAddress}
+        }
+        
+      })
+      return true
+    } catch(err) {
+      console.log(err)
+    }
+    return false
+  }
 
   static async insertDbTable({ prisma, signerAddress, tableName }) {
     try {
@@ -44,11 +59,32 @@ class Sidebar extends Nullstack {
     }
     return false;
   }
+  async hasTable({__tableland, tableName}) {
+    try {
+      const query = `SELECT * FROM ${tableName} LIMIT 1;`;
+      await __tableland.read(query);
+    } catch(err) {
+      throw new Error(`Table ${tableName} does not exists`)
+    }
+  }
+  async removeTable({__tableland, instances, tableName}) {
+    this.loading = true
+    try {
+      await this.deleteDbTable({signerAddress: __tableland.signerAddress, tableName})
+      await this.getDatabases()
+      instances.toast._showInfoToast(`Table ${tableName} removed with success!`)
+    } catch(err) {
+      instances.toast._showErrorToast(`Error while removing table ${tableName}`)
+    } finally {
+      this.loading = false
+    }
+  }
   async importTable({ __tableland, instances }) {
     this.loading = true;
     this.showInput = !this.showInput;
     try {
       if (!this.showInput && this.tableToImport) {
+        await this.hasTable({tableName: this.tableToImport})
         await this.insertDbTable({
           signerAddress: __tableland.signerAddress,
           tableName: this.tableToImport,
@@ -56,6 +92,7 @@ class Sidebar extends Nullstack {
         await this.getDatabases();
         instances.toast._showInfoToast(`Table imported with success!`);
       }
+      this.tableToImport = ""
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     } finally {
@@ -70,10 +107,9 @@ class Sidebar extends Nullstack {
       });
       const listFromChain = await __tableland.list();
 
-      const tableList = await Promise.all([listFromDB, listFromChain]);
+      const tableList = await Promise.all([listFromChain, listFromDB]);
       this.tables = tableList
         .flat()
-        .sort((a, b) => a?.name.localeCompare(b?.name))
         .filter((v) => !!v);
       return;
     } catch (err) {
@@ -87,13 +123,17 @@ class Sidebar extends Nullstack {
     this.getDatabases();
   }
 
-  renderListItem({ name, params }) {
+  renderListItem({ list, params }) {
     const style =
-      params.name === name ? "color: #762fbe; font-weight: bold;" : "";
+      params.name === list.name ? "color: #E1C2D8; font-weight: bold;" : "";
+    const removeTableAction = () => this.removeTable({tableName: list.name})
     return (
-      <a style={style} href={`/table?name=${name}`} class="px-3">
-        {parseTableName(this.options?.chainId, name)}
+      <div class="flex justify-between">
+      <a style={style} href={`/table?name=${list.name}`} class="px-3">
+        {parseTableName(this.options?.chainId, list.name)}
       </a>
+      {list.imported && <div class="pr-2"><button class="hover:text-button-hover" onclick={removeTableAction}><DeleteIcon width={18} height={18}/></button></div>}
+      </div>
     );
   }
 
@@ -127,7 +167,7 @@ class Sidebar extends Nullstack {
           {this.tables && (
             <nav class="flex flex-col gap-2 max-h-[300px] h-[300px] overflow-y-auto border-solid border-slate-400 border py-2">
               {this.tables.map((list) => (
-                <ListItem name={list.name} />
+                <ListItem list={list} />
               ))}
             </nav>
           )}
