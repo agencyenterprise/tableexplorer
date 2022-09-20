@@ -81,7 +81,7 @@ export const hasColumnTypeAsColumnName = (columns) => {
   }
 }
 export const parseTableName = (chainId, tableName) => {
-    return [(tableName || "").replace(new RegExp(`_[${chainId}]+[0-9A-Za-z]+`,"g"), "")].reduce((acc, v) => v ? v : acc, tableName)
+    return [(tableName || "").replace(new RegExp(`_[${chainId}]+[0-9A-Za-z_]+`,"g"), "")].reduce((acc, v) => v ? v : acc, tableName)
 }
 
 
