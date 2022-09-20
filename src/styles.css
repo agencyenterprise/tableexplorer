@@ -956,11 +956,6 @@ select{
   background-color: rgb(220 38 38 / var(--tw-bg-opacity));
 }
 
-.bg-button-hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(227 169 210 / var(--tw-bg-opacity));
-}
-
 .px-1{
   padding-left: 0.25rem;
   padding-right: 0.25rem;
@@ -1011,6 +1006,10 @@ select{
   padding-bottom: 1.25rem;
 }
 
+.pr-2{
+  padding-right: 0.5rem;
+}
+
 .pt-2{
   padding-top: 0.5rem;
 }
@@ -1037,10 +1036,6 @@ select{
 
 .pt-5{
   padding-top: 1.25rem;
-}
-
-.pr-2{
-  padding-right: 0.5rem;
 }
 
 .text-left{
@@ -1316,9 +1311,9 @@ hr{
   }
 }
 
-.hover\:bg-button-hover:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(227 169 210 / var(--tw-bg-opacity));
+.hover\:text-button-hover:hover{
+  --tw-text-opacity: 1;
+  color: rgb(227 169 210 / var(--tw-text-opacity));
 }
 
 .hover\:text-green-100:hover{
@@ -1329,11 +1324,6 @@ hr{
 .hover\:text-red-400:hover{
   --tw-text-opacity: 1;
   color: rgb(248 113 113 / var(--tw-text-opacity));
-}
-
-.hover\:text-button-hover:hover{
-  --tw-text-opacity: 1;
-  color: rgb(227 169 210 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover{
