@@ -50,7 +50,7 @@ class Application extends Nullstack {
                   </p>
                   <span class="heart" />
                   <a href="https://ae.studio" target="_blank" class="px-1">
-                    by AE Studio
+                    AE Studio
                   </a>
                 </div>
               </div>
