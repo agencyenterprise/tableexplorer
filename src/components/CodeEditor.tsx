@@ -1,8 +1,16 @@
 import Nullstack from "nullstack";
+import { CustomClientContext } from "../types/CustomContexts";
 
 class CodeEditor extends Nullstack {
   editor = null;
-  hydrate({ value, onchange, disabled }) {
+  hydrate({
+    value,
+    onchange,
+    disabled,
+  }: CustomClientContext & {
+    onchange: (props: any) => void;
+    disabled: boolean;
+  }) {
     try {
       const monaco = require("monaco-editor/esm/vs/editor/editor.api");
       this.editor = monaco.editor.create(

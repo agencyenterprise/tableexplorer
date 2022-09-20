@@ -6,14 +6,13 @@
   "license": "ISC",
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
-    "concurrently": "^7.4.0",
     "nullstack": "~0.16.0",
     "prisma": "^4.3.1",
-    "tailwindcss": "^3.1.8"
+    "tailwindcss": "^3.1.8",
+    "postcss-loader": "^7.0.1"
   },
   "scripts": {
-    "start": "concurrently \"npm run start-tailwind\" \"npm run start-prisma\" \"npm run start-nullstack\"",
-    "start-nullstack": "npx nullstack start",
+    "start": "npx nullstack start",
     "vercel-build": "prisma generate  && npx nullstack build",
     "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
     "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css",

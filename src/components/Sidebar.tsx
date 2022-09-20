@@ -1,15 +1,29 @@
-import Nullstack from "nullstack";
+import Nullstack, { NullstackNode } from "nullstack";
 import HomeIcon from "./Home";
 import { parseTableName } from "../utils/SQLParser";
-import Loader from "../components/Loader";
+import Loader from "./Loader";
 import TablelandLogo from "../assets/TablelandLogo";
+import {
+  CustomClientContext,
+  CustomServerContext,
+  WithCustomServerContext,
+} from "../types/CustomContexts";
+import { ConnectOptions } from "@tableland/sdk";
+
+declare function ListItem(): NullstackNode;
+
 class Sidebar extends Nullstack {
   tables = [];
   showInput = false;
   loading = false;
   tableToImport = "";
 
-  static async tablesFromDb({ prisma, signerAddress }) {
+  options: ConnectOptions;
+
+  static async tablesFromDb({
+    prisma,
+    signerAddress,
+  }: WithCustomServerContext<{ signerAddress: string }>) {
     try {
       const tables = await prisma.tableUser.findMany({
         where: {
@@ -26,7 +40,11 @@ class Sidebar extends Nullstack {
     return [];
   }
 
-  static async insertDbTable({ prisma, signerAddress, tableName }) {
+  static async insertDbTable({
+    prisma,
+    signerAddress,
+    tableName,
+  }: WithCustomServerContext<{ signerAddress: string; tableName: string }>) {
     try {
       await prisma.tableUser.upsert({
         where: {
@@ -49,7 +67,7 @@ class Sidebar extends Nullstack {
     this.showInput = !this.showInput;
     try {
       if (!this.showInput && this.tableToImport) {
-        await this.insertDbTable({
+        await Sidebar.insertDbTable({
           signerAddress: __tableland.signerAddress,
           tableName: this.tableToImport,
         });
@@ -63,9 +81,10 @@ class Sidebar extends Nullstack {
     }
   }
 
-  async getDatabases({ __tableland, instances }) {
+  async getDatabases(context?: CustomClientContext) {
+    const { __tableland, instances } = context;
     try {
-      const listFromDB = this.tablesFromDb({
+      const listFromDB = Sidebar.tablesFromDb({
         signerAddress: __tableland.signerAddress,
       });
       const listFromChain = await __tableland.list();
@@ -82,7 +101,7 @@ class Sidebar extends Nullstack {
     this.tables = [];
   }
 
-  hydrate({ __tableland }) {
+  hydrate({ __tableland }: CustomClientContext) {
     this.options = __tableland?.options;
     this.getDatabases();
   }
@@ -102,7 +121,7 @@ class Sidebar extends Nullstack {
     context.__tableland = undefined;
   }
 
-  render({ __tableland }) {
+  render({ __tableland }: CustomClientContext) {
     return (
       <aside class="w-full max-w-[350px] px-6 pt-2 pb-6 flex flex-col border-r h-full justify-between overflow-x-auto">
         <div class="flex flex-col gap-12 pr-3">
@@ -117,8 +136,8 @@ class Sidebar extends Nullstack {
               {[
                 __tableland.signerAddress.substring(0, 4),
                 __tableland.signerAddress.substring(
-                  __tableland.signerAddress.length - 5,
-                  __tableland.signerAddress - 1
+                  __tableland.signerAddress?.length - 5,
+                  __tableland.signerAddress.length - 1
                 ),
               ].join("...")}
             </div>

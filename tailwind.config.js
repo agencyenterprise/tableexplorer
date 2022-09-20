@@ -1,5 +1,10 @@
 module.exports = {
-  content: ["./src/**/*.jsx"],
+  content: [
+    "./src/**/*.njs",
+    "./src/**/*.jsx",
+    "./src/**/*.nts",
+    "./src/**/*.tsx",
+  ],
   tableLayout: ["responsive", "hover", "focus", "fixed"],
   theme: {
     extend: {
@@ -20,7 +25,7 @@ module.exports = {
         "background-quaternary": "#3b3944",
         white: "#e8eaed",
         "red-standard": "#C73535",
-        "green-standard": "#68DF98"
+        "green-standard": "#68DF98",
       },
     },
   },
