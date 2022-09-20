@@ -9,7 +9,7 @@ import TableSchema from "./views/TableSchema";
 import TablePermissions from "./views/TablePermissions";
 import Toast from "./components/Toast";
 import { CustomClientContext } from "./types/CustomContexts";
-import '../tailwind.css';
+import "../tailwind.css";
 
 class Application extends Nullstack {
   prepare({ page }: NullstackClientContext) {
