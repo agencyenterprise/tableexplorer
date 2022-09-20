@@ -195,9 +195,11 @@ class Sidebar extends Nullstack {
             </button>
           </div>
         </div>
-        <button class="btn-primary w-56" onclick={this.logout}>
+        <div class="pt-5">
+        <button class="btn-primary w-56 " onclick={this.logout}>
           Logout
         </button>
+        </div>
       </aside>
     );
   }

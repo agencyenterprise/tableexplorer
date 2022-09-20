@@ -176,7 +176,7 @@ class Table extends Nullstack {
   addInsertQuery({ instances }) {
     const removePkColumns = () =>
       Object.entries(this.tableInput).reduce((acc, v) => {
-        return v[1].name == this.pkColumn ? acc : [{ ...v[1], value: "" }, ...acc];
+        return v[1].name == this.pkColumn && v[1].type == "integer" ? acc : [{ ...v[1], value: "" }, ...acc];
       }, []);
     const pkColumn = () =>
       Object.entries(this.tableInput).reduce((acc, v) => {

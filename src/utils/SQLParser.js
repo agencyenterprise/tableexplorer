@@ -31,6 +31,18 @@ export const parseValues = (column) => {
   return value;
 }
 
+export const parseId = (column, id) => {
+  let parseId = null
+  switch (column.type) {
+    case "integer":
+      parseId = (parseInt(id) || "NULL");
+      break;
+    default:
+      parseId = (`'${id}'` || "NULL");
+  }
+  return parseId;
+}
+
 export const parseInsertData = (columns, tableName) => {
   const values = `(${columns.map((column) => parseValues(column)).join(", ")})`;
   const cols = columns.map((column) => column.name).join(", ");
@@ -40,7 +52,8 @@ export const parseInsertData = (columns, tableName) => {
 
 export const parseUpdateData = (columns, tableName, id, idColumn) => {
   const values = `${columns.map((column) => `${column.name} = ${parseValues(column)}`).join(", ")}`;
-  const updateTemplate = `UPDATE ${tableName} SET ${values}  WHERE ${idColumn} = ${id};`;
+  const idField = columns.find(col => col.name == idColumn)
+  const updateTemplate = `UPDATE ${tableName} SET ${values}  WHERE ${idColumn} = ${parseId(idField, id)};`;
   return updateTemplate;
 }
 
