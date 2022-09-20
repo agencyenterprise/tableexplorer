@@ -1,7 +1,7 @@
 import Nullstack from "nullstack";
 
 function getActiveStyle(path, route) {
-  if (path === route) return "border-bottom: 1px solid #fff;";
+  if (path === route) return "border-bottom: 3px solid #fff;";
   return "";
 }
 
@@ -24,11 +24,7 @@ class TableNav extends Nullstack {
         <a class="py-4 w-full text-center" style={getActiveStyle("/schema", this.route)} href={`/schema?${this.query}`}>
           Schema
         </a>
-        <a
-          class="py-4 w-full text-center"
-          style={getActiveStyle("/permissions", this.route)}
-          href={`/permissions?${this.query}`}
-        >
+        <a class="py-4 w-full text-center" style={getActiveStyle("/permissions", this.route)} href={`/permissions?${this.query}`}>
           Permissions
         </a>
       </nav>

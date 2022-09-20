@@ -20,9 +20,10 @@ class Table extends Nullstack {
   insertString = "Insert";
   readString = "Read";
   readOrInsert = "";
+  readOptions = { output: "table" };
   async readQuery({ __tableland, instances }) {
     try {
-      const data = await __tableland.read(this.query);
+      const data = await __tableland.read(this.query, this.readOptions);
       this.data = data;
     } catch (err) {
       instances.toast._showErrorToast(err.message);
@@ -48,7 +49,7 @@ class Table extends Nullstack {
   async insertData({ __tableland, instances }) {
     try {
       await __tableland.write(this.query);
-      const data = await __tableland.read(this.baseQuery());
+      const data = await __tableland.read(this.baseQuery(), this.readOptions);
       this.data = data;
       instances.toast._showInfoToast(`Table ${this.name} updated with success!`);
     } catch (err) {
@@ -58,8 +59,6 @@ class Table extends Nullstack {
   async hydrate({ __tableland }) {
     if (!this.name) return;
     this.options = __tableland?.options;
-    const data = await __tableland.read(this.query);
-    this.data = data;
     this.getTableSchema();
   }
 
@@ -77,6 +76,8 @@ class Table extends Nullstack {
       this.pkColumn = getPKColumn(this.schema.columns, this.name);
       this.pkColumnIndex = getPKColumnIndex(this.schema.columns);
       this.tableInput = this.populateInputFields({ columns: this.schema?.columns });
+      const data = await __tableland.read(this.query, this.readOptions);
+      this.data = data;
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -192,6 +193,7 @@ class Table extends Nullstack {
       this.tableInput[v].value = row[v];
       return this.tableInput[v];
     });
+    console.log(pkColumn);
     this.query = parseUpdateData(updateInput, this.name, recordId, pkColumn);
     instances.code_editor.setEditorValue({ query: this.query });
   }
@@ -223,7 +225,7 @@ class Table extends Nullstack {
             </button>
           </div>
 
-          <div class="py-10 overflow-auto border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
+          <div class="py-10 overflow-auto border-solid border border-border-color" style="max-width: calc(100% - 10px); max-height: 800px">
             {this.loading ? <Loader width={50} height={50} /> : <TableData />}
           </div>
         </div>

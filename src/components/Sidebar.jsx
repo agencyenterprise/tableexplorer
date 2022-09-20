@@ -26,19 +26,18 @@ class Sidebar extends Nullstack {
     }
     return [];
   }
-  static async deleteDbTable({prisma, signerAddress, tableName}) {
+  static async deleteDbTable({ prisma, signerAddress, tableName }) {
     try {
       await prisma.tableUser.delete({
         where: {
-          tableName_userAddress: {tableName, userAddress: signerAddress}
-        }
-        
-      })
-      return true
-    } catch(err) {
-      console.log(err)
+          tableName_userAddress: { tableName, userAddress: signerAddress },
+        },
+      });
+      return true;
+    } catch (err) {
+      console.log(err);
     }
-    return false
+    return false;
   }
 
   static async insertDbTable({ prisma, signerAddress, tableName }) {
@@ -59,24 +58,24 @@ class Sidebar extends Nullstack {
     }
     return false;
   }
-  async hasTable({__tableland, tableName}) {
+  async hasTable({ __tableland, tableName }) {
     try {
       const query = `SELECT * FROM ${tableName} LIMIT 1;`;
-      await __tableland.read(query);
-    } catch(err) {
-      throw new Error(`Table ${tableName} does not exists`)
+      await __tableland.read(query, this.readOptions);
+    } catch (err) {
+      throw new Error(`Table ${tableName} does not exists`);
     }
   }
-  async removeTable({__tableland, instances, tableName}) {
-    this.loading = true
+  async removeTable({ __tableland, instances, tableName }) {
+    this.loading = true;
     try {
-      await this.deleteDbTable({signerAddress: __tableland.signerAddress, tableName})
-      await this.getDatabases()
-      instances.toast._showInfoToast(`Table ${tableName} removed with success!`)
-    } catch(err) {
-      instances.toast._showErrorToast(`Error while removing table ${tableName}`)
+      await this.deleteDbTable({ signerAddress: __tableland.signerAddress, tableName });
+      await this.getDatabases();
+      instances.toast._showInfoToast(`Table ${tableName} removed with success!`);
+    } catch (err) {
+      instances.toast._showErrorToast(`Error while removing table ${tableName}`);
     } finally {
-      this.loading = false
+      this.loading = false;
     }
   }
   async importTable({ __tableland, instances }) {
@@ -84,7 +83,7 @@ class Sidebar extends Nullstack {
     this.showInput = !this.showInput;
     try {
       if (!this.showInput && this.tableToImport) {
-        await this.hasTable({tableName: this.tableToImport})
+        await this.hasTable({ tableName: this.tableToImport });
         await this.insertDbTable({
           signerAddress: __tableland.signerAddress,
           tableName: this.tableToImport,
@@ -92,7 +91,7 @@ class Sidebar extends Nullstack {
         await this.getDatabases();
         instances.toast._showInfoToast(`Table imported with success!`);
       }
-      this.tableToImport = ""
+      this.tableToImport = "";
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     } finally {
@@ -108,9 +107,7 @@ class Sidebar extends Nullstack {
       const listFromChain = await __tableland.list();
 
       const tableList = await Promise.all([listFromChain, listFromDB]);
-      this.tables = tableList
-        .flat()
-        .filter((v) => !!v);
+      this.tables = tableList.flat().filter((v) => !!v);
       return;
     } catch (err) {
       instances.toast._showErrorToast("Unexpected Error!");
@@ -124,15 +121,20 @@ class Sidebar extends Nullstack {
   }
 
   renderListItem({ list, params }) {
-    const style =
-      params.name === list.name ? "color: #E1C2D8; font-weight: bold;" : "";
-    const removeTableAction = () => this.removeTable({tableName: list.name})
+    const style = params.name === list.name ? "color: #E1C2D8; font-weight: bold;" : "";
+    const removeTableAction = () => this.removeTable({ tableName: list.name });
     return (
       <div class="flex justify-between">
-      <a style={style} href={`/table?name=${list.name}`} class="px-3">
-        {parseTableName(this.options?.chainId, list.name)}
-      </a>
-      {list.imported && <div class="pr-2"><button class="hover:text-button-hover" onclick={removeTableAction}><DeleteIcon width={18} height={18}/></button></div>}
+        <a style={style} href={`/table?name=${list.name}`} class="px-3">
+          {parseTableName(this.options?.chainId, list.name)}
+        </a>
+        {list.imported && (
+          <div class="pr-2">
+            <button class="hover:text-button-hover" onclick={removeTableAction}>
+              <DeleteIcon width={18} height={18} />
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -147,19 +149,13 @@ class Sidebar extends Nullstack {
       <aside class="w-full max-w-[350px] px-6 pt-2 pb-6 flex flex-col border-r h-full justify-between overflow-x-auto">
         <div class="flex flex-col gap-12 pr-3">
           <a href="/">
-            <div
-              class="flex justify-center items-center flex-col py-0"
-              title={__tableland.signerAddress}
-            >
+            <div class="flex justify-center items-center flex-col py-0" title={__tableland.signerAddress}>
               <div class="my-2">
                 <TablelandLogo />
               </div>
               {[
                 __tableland.signerAddress.substring(0, 4),
-                __tableland.signerAddress.substring(
-                  __tableland.signerAddress.length - 5,
-                  __tableland.signerAddress - 1
-                ),
+                __tableland.signerAddress.substring(__tableland.signerAddress.length - 5, __tableland.signerAddress - 1),
               ].join("...")}
             </div>
           </a>
@@ -171,34 +167,22 @@ class Sidebar extends Nullstack {
               ))}
             </nav>
           )}
-          <a href="/addTable" class="btn-primary w-56">
-            + Add Table
-          </a>
           <div class="py-1">
-            <input
-              type="text"
-              bind={this.tableToImport}
-              placeholder="Table name"
-              class="bg-background mb-4 w-56"
-              hidden={!this.showInput}
-            />
-            <button
-              class="btn-primary w-56"
-              onclick={this.importTable}
-              disabled={this.loading}
-            >
-              {this.loading ? (
-                <Loader width={38} height={38} />
-              ) : (
-                "Import Table"
-              )}
+            <div class="py-4">
+              <a href="/addTable" class="btn-primary w-56">
+                + Add Table
+              </a>
+            </div>
+            <input type="text" bind={this.tableToImport} placeholder="Table name" class="bg-background mb-4 w-56" hidden={!this.showInput} />
+            <button class="btn-primary w-56" onclick={this.importTable} disabled={this.loading}>
+              {this.loading ? <Loader width={38} height={38} /> : "Import Table"}
             </button>
           </div>
         </div>
         <div class="pt-5">
-        <button class="btn-primary w-56 " onclick={this.logout}>
-          Logout
-        </button>
+          <button class="btn-primary w-56 " onclick={this.logout}>
+            Logout
+          </button>
         </div>
       </aside>
     );

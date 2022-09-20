@@ -20,7 +20,8 @@ module.exports = {
         "background-quaternary": "#3b3944",
         white: "#e8eaed",
         "red-standard": "#C73535",
-        "green-standard": "#68DF98"
+        "green-standard": "#68DF98",
+        "border-color": "#404040"
       },
     },
   },
