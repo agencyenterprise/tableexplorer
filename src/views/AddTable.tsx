@@ -6,8 +6,8 @@ import {
   hasColumnTypeAsColumnName,
   parseCreateTableSQL,
 } from "../utils/SQLParser";
-import DeleteIcon from "../components/Delete";
-import Loader from "../components/Loader";
+import DeleteIcon from "../assets/Delete";
+import Loader from "../assets/Loader";
 import CodeEditor from "../components/CodeEditor";
 import { CustomClientContext } from "../types/CustomContexts";
 

@@ -1,4 +1,4 @@
-const InsertIcon = ({ width, height }) => {
+const InsertIcon = ({ width, height }: { width?: number; height?: number }) => {
   return (
     <svg width={width} height={height} viewBox="0 0 24 24">
       <path

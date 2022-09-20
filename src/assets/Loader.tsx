@@ -1,4 +1,4 @@
-const Loader = ({ width, height }) => {
+const Loader = ({ width, height }: { width?: number; height?: number }) => {
   return (
     <div class="flex justify-center">
       <svg

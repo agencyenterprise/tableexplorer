@@ -10,10 +10,10 @@ import {
 } from "../utils/SQLParser";
 import TableNav from "../components/TableNav";
 import UpdateIcon from "../components/Update";
-import DeleteIcon from "../components/Delete";
-import ReadIcon from "../components/Read";
-import InsertIcon from "../components/Insert";
-import Loader from "../components/Loader";
+import DeleteIcon from "../assets/Delete";
+import ReadIcon from "../assets/Read";
+import InsertIcon from "../assets/Insert";
+import Loader from "../assets/Loader";
 import CodeEditor from "../components/CodeEditor";
 import {
   CustomClientContext,

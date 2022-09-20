@@ -1,19 +1,16 @@
+import { ConnectOptions } from "@tableland/sdk";
 import Nullstack, { NullstackNode } from "nullstack";
-import HomeIcon from "./Home";
-import { parseTableName } from "../utils/SQLParser";
-import Loader from "./Loader";
+import Loader from "../assets/Loader";
 import TablelandLogo from "../assets/TablelandLogo";
 import {
-  CustomClientContext,
-  CustomServerContext,
-  WithCustomServerContext,
-  WithNullstackContext,
+  CustomClientContext, WithCustomServerContext,
+  WithNullstackContext
 } from "../types/CustomContexts";
-import { ConnectOptions } from "@tableland/sdk";
+import { parseTableName } from "../utils/SQLParser";
 
 declare function ListItem(): NullstackNode;
 
-import DeleteIcon from "./Delete";
+import DeleteIcon from "../assets/Delete";
 class Sidebar extends Nullstack {
   tables = [];
   showInput = false;

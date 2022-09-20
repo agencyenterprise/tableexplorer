@@ -3,7 +3,7 @@ import TableNav from "../components/TableNav";
 import { TABLE_PERMISSIONS } from "../utils/TableTypes";
 import { parseTableName } from "../utils/SQLParser";
 import CodeEditor from "../components/CodeEditor";
-import Loader from "../components/Loader";
+import Loader from "../assets/Loader";
 import {
   CustomClientContext,
   WithNullstackContext,
