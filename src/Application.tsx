@@ -42,8 +42,9 @@ class Application extends Nullstack {
               <div class="flex relative items-baseline">
                 <p class="text-center flex items-center relative">Made with </p>
                 <span class="heart" />
+                by
                 <a href="https://ae.studio" target="_blank" class="px-1">
-                  by AE Studio
+                  AE Studio
                 </a>
               </div>
             </div>
