@@ -1,8 +1,8 @@
 import Nullstack from "nullstack";
 import { CustomClientContext } from "../types/CustomContexts";
-
+import {editor} from "monaco-editor/esm/vs/editor/editor.api"
 class CodeEditor extends Nullstack {
-  editor = null;
+  editor: editor.IStandaloneCodeEditor | null = null;
   hydrate({
     value,
     onchange,
@@ -22,19 +22,19 @@ class CodeEditor extends Nullstack {
           fontSize: "16px",
         }
       );
-      this.editor.updateOptions({ readOnly: !!disabled });
-      this.editor.onDidChangeModelContent((_) => {
-        onchange && onchange({ query: this.editor.getValue() });
+      this.editor!.updateOptions({ readOnly: !!disabled });
+      this.editor!.onDidChangeModelContent((_) => {
+        onchange && onchange({ query: this.editor!.getValue() });
       });
     } catch (err) {
       console.log(err);
     }
   }
   getEditorValue() {
-    return this.editor.getValue();
+    return this.editor!.getValue();
   }
   setEditorValue({ query }) {
-    this.editor.setValue(query);
+    this.editor!.setValue(query);
   }
   render() {
     return (

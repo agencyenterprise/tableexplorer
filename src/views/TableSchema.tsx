@@ -3,9 +3,10 @@ import Nullstack from "nullstack";
 import TableNav from "../components/TableNav";
 import { CustomClientContext } from "../types/CustomContexts";
 import { parseTableName } from "../utils/SQLParser";
+import { SchemaQueryResult } from "@tableland/sdk";
 class TableSchema extends Nullstack {
   name = "";
-  data = { columns: [], table_constraints: [] };
+  data: SchemaQueryResult = { columns: [], table_constraints: [] };
   options: ConnectOptions;
 
   async hydrate({ __tableland }: CustomClientContext) {
@@ -18,7 +19,7 @@ class TableSchema extends Nullstack {
     this.name = params.name;
   }
   async getSchema(context?: CustomClientContext) {
-    const { __tableland, instances } = context;
+    const { __tableland, instances } = context!;
     try {
       const schema = await __tableland.schema(this.name);
       if ((schema as any)?.message) {
@@ -35,7 +36,7 @@ class TableSchema extends Nullstack {
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12">
           <h1 class="text-2xl mb-6">
-            {parseTableName(this.options?.chainId, this.name)}
+            {parseTableName(this.options?.chainId!, this.name)}
           </h1>
           {this.data && (
             <>
@@ -75,7 +76,7 @@ class TableSchema extends Nullstack {
                         {col.type}
                       </td>
                       <td class="text-sm px-6 py-4 whitespace-nowrap">
-                        {col.constraints.join(" | ")}
+                        {col.constraints!.join(" | ")}
                       </td>
                     </tr>
                   ))}

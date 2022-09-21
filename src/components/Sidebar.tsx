@@ -1,4 +1,4 @@
-import { ConnectOptions } from "@tableland/sdk";
+import { ConnectOptions, TableMetadata } from "@tableland/sdk";
 import Nullstack, { NullstackNode } from "nullstack";
 import Loader from "../assets/Loader";
 import TablelandLogo from "../assets/TablelandLogo";
@@ -12,7 +12,7 @@ declare function ListItem(): NullstackNode;
 
 import DeleteIcon from "../assets/Delete";
 class Sidebar extends Nullstack {
-  tables = [];
+  tables: ({ name: string; imported: boolean; } | TableMetadata)[] = [];
   showInput = false;
   loading = false;
   tableToImport = "";
@@ -24,12 +24,12 @@ class Sidebar extends Nullstack {
     signerAddress,
   }: WithCustomServerContext<{ signerAddress: string }>) {
     try {
-      const tables = await prisma.tableUser.findMany({
+      const tables = await prisma!.tableUser.findMany({
         where: {
           userAddress: signerAddress,
         },
       });
-      return tables.map((item) => ({
+      return tables!.map((item) => ({
         name: item.tableName,
         imported: true,
       }));
@@ -44,7 +44,7 @@ class Sidebar extends Nullstack {
     tableName,
   }: WithCustomServerContext<{ signerAddress: string; tableName: string }>) {
     try {
-      await prisma.tableUser.delete({
+      await prisma!.tableUser.delete({
         where: {
           tableName_userAddress: { tableName, userAddress: signerAddress },
         },
@@ -62,7 +62,7 @@ class Sidebar extends Nullstack {
     tableName,
   }: WithCustomServerContext<{ signerAddress: string; tableName: string }>) {
     try {
-      await prisma.tableUser.upsert({
+      await prisma!.tableUser.upsert({
         where: {
           tableName_userAddress: { tableName, userAddress: signerAddress },
         },
@@ -84,7 +84,7 @@ class Sidebar extends Nullstack {
   }: WithNullstackContext<{ tableName: string }>) {
     try {
       const query = `SELECT * FROM ${tableName} LIMIT 1;`;
-      await __tableland.read(query);
+      await __tableland!.read(query);
     } catch (err) {
       throw new Error(`Table ${tableName} does not exists`);
     }
@@ -97,15 +97,15 @@ class Sidebar extends Nullstack {
     this.loading = true;
     try {
       await Sidebar.deleteDbTable({
-        signerAddress: __tableland.signerAddress,
+        signerAddress: __tableland!.signerAddress!,
         tableName,
       });
       await this.getDatabases();
-      instances.toast._showInfoToast(
+      instances!.toast._showInfoToast(
         `Table ${tableName} removed with success!`
       );
     } catch (err) {
-      instances.toast._showErrorToast(
+      instances!.toast._showErrorToast(
         `Error while removing table ${tableName}`
       );
     } finally {
@@ -134,10 +134,10 @@ class Sidebar extends Nullstack {
   }
 
   async getDatabases(context?: CustomClientContext) {
-    const { __tableland, instances } = context;
+    const { __tableland, instances } = context!;
     try {
       const listFromDB = Sidebar.tablesFromDb({
-        signerAddress: __tableland.signerAddress,
+        signerAddress: __tableland.signerAddress!,
       });
       const listFromChain = await __tableland.list();
 
@@ -162,7 +162,7 @@ class Sidebar extends Nullstack {
     return (
       <div class="flex justify-between">
         <a style={style} href={`/table?name=${list.name}`} class="px-3">
-          {parseTableName(this.options?.chainId, list.name)}
+          {parseTableName(this.options?.chainId!, list.name)}
         </a>
         {list.imported && (
           <div class="pr-2">
@@ -193,11 +193,11 @@ class Sidebar extends Nullstack {
                 <TablelandLogo />
               </div>
               {[
-                __tableland.signerAddress.substring(0, 4),
-                __tableland.signerAddress.substring(
-                  __tableland.signerAddress?.length - 5,
-                  __tableland.signerAddress.length - 1
-                ),
+                __tableland.signerAddress?.substring(0, 4)!,
+                __tableland.signerAddress?.substring(
+                  __tableland.signerAddress?.length - 5!,
+                  __tableland.signerAddress.length - 1!
+                )!,
               ].join("...")}
             </div>
           </a>

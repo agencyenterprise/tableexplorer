@@ -18,3 +18,6 @@ export type CustomServerContext = NullstackClientContext & {
 };
 
 export type WithCustomServerContext<T> = Partial<CustomServerContext> & T;
+
+
+

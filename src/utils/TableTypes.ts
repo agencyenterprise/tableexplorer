@@ -1,8 +1,8 @@
-export const TABLE_TYPES = ["text", "integer", "blob", "any"];
-export const TABLE_CONSTRAINTS = ["PRIMARY KEY", "NOT NULL", "UNIQUE"];
-export const TABLE_PERMISSIONS = ["INSERT", "UPDATE", "DELETE"];
+export const TABLE_TYPES: string[] = ["text", "integer", "blob", "any"];
+export const TABLE_CONSTRAINTS: string[] = ["PRIMARY KEY", "NOT NULL", "UNIQUE"];
+export const TABLE_PERMISSIONS: string[] = ["INSERT", "UPDATE", "DELETE"];
 
-export function inputTypeByType(type) {
+export function inputTypeByType(type: string) {
   switch (type) {
     case "text":
       return "text";

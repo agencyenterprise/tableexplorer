@@ -10,6 +10,8 @@ import DeleteIcon from "../assets/Delete";
 import Loader from "../assets/Loader";
 import CodeEditor from "../components/CodeEditor";
 import { CustomClientContext } from "../types/CustomContexts";
+import { SchemaColumns } from "@tableland/sdk";
+import { Column } from "../types/columns";
 
 declare function Column(): NullstackNode;
 
@@ -22,7 +24,7 @@ class AddTable extends Nullstack {
 
   tableToImport = "";
 
-  columns = [{ type: "integer", name: "id", constraints: [] }];
+  columns: Column[] = [{ type: "integer", name: "id", constraints: [] }];
 
   async hydrate() {
     try {
@@ -103,7 +105,7 @@ class AddTable extends Nullstack {
             </select>
           </div>
         </div>
-        {TABLE_CONSTRAINTS.map((constraint) => (
+        {TABLE_CONSTRAINTS.map((constraint: string) => (
           <div class="flex gap-1 items-center">
             <input
               type="checkbox"
@@ -115,7 +117,7 @@ class AddTable extends Nullstack {
                 if (event.target.checked) {
                   if (constraint === "PRIMARY KEY") {
                     // Remove all the other primary keys
-                    let newColumns = this.columns.map((col) => ({
+                    let newColumns: Column[] = this.columns.map((col) => ({
                       ...col,
                       constraints: col.constraints.filter(
                         (c) => c !== constraint

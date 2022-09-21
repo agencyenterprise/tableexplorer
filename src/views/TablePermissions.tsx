@@ -46,7 +46,7 @@ class TablePermissions extends Nullstack {
     const query = `${type} ${this.permissions.join(", ")} ON ${this.name} ${
       type === "GRANT" ? "TO" : "FROM"
     } '${this.addressPermission}'`;
-    instances.permissions_editor.setEditorValue({ query });
+    instances!.permissions_editor.setEditorValue({ query });
   }
 
   async runQuery({ __tableland, instances }) {
@@ -93,7 +93,7 @@ class TablePermissions extends Nullstack {
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12">
           <h1 class="text-2xl mb-6">
-            {parseTableName(this.options?.chainId, this.name)}
+            {parseTableName(this.options?.chainId!, this.name)}
           </h1>
           {/* <textarea name="query" id="query" cols="30" rows="2" class="bg-background w-full mb-2" bind={this.query} /> */}
           <CodeEditor

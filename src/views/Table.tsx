@@ -33,7 +33,7 @@ class Table extends Nullstack {
   data;
   loading = false;
   limit = 50;
-  schema: SchemaQueryResult = null;
+  schema: SchemaQueryResult | null  = null;
   pkColumn = "";
   pkColumnIndex = -1;
   tableInput: SchemaColumns;
@@ -44,7 +44,7 @@ class Table extends Nullstack {
   options: ConnectOptions;
 
   async readQuery(context?: CustomClientContext) {
-    const { __tableland, instances } = context;
+    const { __tableland, instances } = context!;
     try {
       const data = await __tableland.read(this.query);
       this.data = data;
@@ -53,7 +53,7 @@ class Table extends Nullstack {
     }
   }
   async runQuery(context?: CustomClientContext) {
-    const { instances } = context;
+    const { instances } = context!;
     this.loading = true;
     try {
       this.query = instances.code_editor.getEditorValue();
@@ -71,7 +71,7 @@ class Table extends Nullstack {
     }
   }
   async insertData(context?: CustomClientContext) {
-    const { __tableland, instances } = context;
+    const { __tableland, instances } = context!;
     try {
       await __tableland.write(this.query);
       const data = await __tableland.read(this.baseQuery());
@@ -100,7 +100,7 @@ class Table extends Nullstack {
     return `SELECT * FROM ${this.name} LIMIT ${this.limit}`;
   }
   async getTableSchema(context?: CustomClientContext) {
-    const { __tableland, instances } = context;
+    const { __tableland, instances } = context!;
     try {
       this.schema = await __tableland.schema(this.name);
       this.pkColumn = getPKColumn(this.schema.columns, this.name);
@@ -139,13 +139,13 @@ class Table extends Nullstack {
   }: WithNullstackContext<{ recordId: number; recordIndex: number }>) {
     this.loading = true;
     try {
-      await __tableland.write(
+      await __tableland!.write(
         parseDeleteData(this.name, recordId, this.pkColumn)
       );
       this.data.rows = this.data.rows.filter((r) => r[recordIndex] != recordId);
-      instances.toast._showInfoToast(`Row deleted from table ${this.name}`);
+      instances!.toast._showInfoToast(`Row deleted from table ${this.name}`);
     } catch (err) {
-      instances.toast._showErrorToast(err.message);
+      instances!.toast._showErrorToast(err.message);
     } finally {
       this.loading = false;
     }
@@ -229,15 +229,15 @@ class Table extends Nullstack {
     this.query = query;
   }
   addInsertQuery(context?: CustomClientContext) {
-    const { instances } = context;
+    const { instances } = context!;
     const removePkColumns = () =>
-      Object.entries(this.tableInput).reduce((acc, v) => {
+      Object.entries(this.tableInput).reduce((acc: any[], v) => {
         return v[1].name == this.pkColumn
           ? acc
           : [{ ...v[1], value: "" }, ...acc];
       }, []);
     const pkColumn = () =>
-      Object.entries(this.tableInput).reduce((acc, v) => {
+      Object.entries(this.tableInput).reduce((acc: any[], v) => {
         return v[1].name != this.pkColumn
           ? acc
           : [{ ...v[1], value: "" }, ...acc];
@@ -258,10 +258,10 @@ class Table extends Nullstack {
       return this.tableInput[v];
     });
     this.query = parseUpdateData(updateInput, this.name, recordId, pkColumn);
-    instances.code_editor.setEditorValue({ query: this.query });
+    instances!.code_editor.setEditorValue({ query: this.query });
   }
   updateToBaseQuery(context?: CustomClientContext) {
-    const { instances } = context;
+    const { instances } = context!;
     instances.code_editor.setEditorValue({ query: this.baseQuery() });
   }
   populateInputFields({ columns }) {
@@ -279,7 +279,7 @@ class Table extends Nullstack {
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12 overflow-y-auto">
           <h1 class="text-2xl mb-6">
-            {parseTableName(this.options?.chainId, this.name)}
+            {parseTableName(this.options?.chainId!, this.name)}
           </h1>
           <CodeEditor
             key="code_editor"
