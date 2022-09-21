@@ -3,8 +3,9 @@ import Nullstack, { NullstackNode } from "nullstack";
 import Loader from "../assets/Loader";
 import TablelandLogo from "../assets/TablelandLogo";
 import {
-  CustomClientContext, WithCustomServerContext,
-  WithNullstackContext
+  CustomClientContext,
+  WithCustomServerContext,
+  WithNullstackContext,
 } from "../types/CustomContexts";
 import { parseTableName } from "../utils/SQLParser";
 
@@ -19,65 +20,6 @@ class Sidebar extends Nullstack {
 
   options: ConnectOptions;
 
-  static async tablesFromDb({
-    prisma,
-    signerAddress,
-  }: WithCustomServerContext<{ signerAddress: string }>) {
-    try {
-      const tables = await prisma!.tableUser.findMany({
-        where: {
-          userAddress: signerAddress,
-        },
-      });
-      return tables!.map((item) => ({
-        name: item.tableName,
-        imported: true,
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-    return [];
-  }
-  static async deleteDbTable({
-    prisma,
-    signerAddress,
-    tableName,
-  }: WithCustomServerContext<{ signerAddress: string; tableName: string }>) {
-    try {
-      await prisma!.tableUser.delete({
-        where: {
-          tableName_userAddress: { tableName, userAddress: signerAddress },
-        },
-      });
-      return true;
-    } catch (err) {
-      console.log(err);
-    }
-    return false;
-  }
-
-  static async insertDbTable({
-    prisma,
-    signerAddress,
-    tableName,
-  }: WithCustomServerContext<{ signerAddress: string; tableName: string }>) {
-    try {
-      await prisma!.tableUser.upsert({
-        where: {
-          tableName_userAddress: { tableName, userAddress: signerAddress },
-        },
-        create: {
-          tableName,
-          userAddress: signerAddress,
-        },
-        update: {},
-      });
-      return true;
-    } catch (err) {
-      console.log(err);
-    }
-    return false;
-  }
   async hasTable({
     __tableland,
     tableName,
@@ -93,13 +35,13 @@ class Sidebar extends Nullstack {
     __tableland,
     instances,
     tableName,
+    db,
   }: WithNullstackContext<{ tableName: string }>) {
     this.loading = true;
     try {
-      await Sidebar.deleteDbTable({
-        signerAddress: __tableland!.signerAddress!,
-        tableName,
-      });
+      await db.tableUser
+        .where({ tableName, userAddress: __tableland.signerAddress })
+        .delete();
       await this.getDatabases();
       instances!.toast._showInfoToast(
         `Table ${tableName} removed with success!`
@@ -112,16 +54,18 @@ class Sidebar extends Nullstack {
       this.loading = false;
     }
   }
-  async importTable({ __tableland, instances }) {
+  async importTable({ __tableland, instances, db }: CustomClientContext) {
     this.loading = true;
     this.showInput = !this.showInput;
     try {
       if (!this.showInput && this.tableToImport) {
         await this.hasTable({ tableName: this.tableToImport });
-        await Sidebar.insertDbTable({
-          signerAddress: __tableland.signerAddress,
+
+        await db.tableUser.add({
           tableName: this.tableToImport,
+          userAddress: __tableland.signerAddress,
         });
+
         await this.getDatabases();
         instances.toast._showInfoToast(`Table imported with success!`);
       }
@@ -134,11 +78,17 @@ class Sidebar extends Nullstack {
   }
 
   async getDatabases(context?: CustomClientContext) {
-    const { __tableland, instances } = context!;
+    const { __tableland, instances, db } = context;
     try {
-      const listFromDB = Sidebar.tablesFromDb({
-        signerAddress: __tableland.signerAddress!,
-      });
+      const tables = await db.tableUser
+        .where({ userAddress: __tableland.signerAddress })
+        .toArray();
+
+      const listFromDB = tables.map((item) => ({
+        name: item.tableName,
+        imported: true,
+      }));
+
       const listFromChain = await __tableland.list();
 
       const tableList = await Promise.all([listFromChain, listFromDB]);

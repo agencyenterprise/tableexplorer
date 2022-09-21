@@ -7,17 +7,6 @@ const path = require("path");
 
 function customServer(...args) {
   const config = server(...args);
-
-  if (config.mode === "production") {
-    config.plugins.push(
-      new CopyWebpackPlugin({
-        patterns: ["./src/schema.prisma"],
-      })
-    );
-
-    config.externals = ["@prisma/client"];
-  }
-
   return config;
 }
 
