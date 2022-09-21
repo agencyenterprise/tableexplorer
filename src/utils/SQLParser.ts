@@ -1,12 +1,7 @@
 import { SchemaColumns } from "@tableland/sdk";
 import { TABLE_TYPES } from "./TableTypes";
+import {Column} from "../types/columns"
 
-interface Column {
-  type: string;
-  name: string;
-  constraints: any[];
-}
-[];
 
 export function parseCreateTable(columns: Column[]) {
   let query = "";
@@ -28,7 +23,7 @@ export const parseCreateTableSQL = (columns: Column[], tableName: string) => {
 };
 
 export const parseValues = (column) => {
-  let value = null;
+  let value: number | string | null = null;
   switch (column.type) {
     case "integer":
       value = column.value ? parseInt(column.value) : "NULL";
@@ -83,7 +78,7 @@ export const hasPK = (columns: Column[], tableName: string) => {
 
 export const getPKColumn = (columns: SchemaColumns, tableName: string) => {
   const pkFields = (columns || []).find(
-    (v) => Object.values(v.constraints).indexOf("PRIMARY KEY") != -1
+    (v) => (v.constraints || []).indexOf("PRIMARY KEY") != -1
   );
   if (!pkFields) {
     throw new Error(`Table '${tableName}' must have a primary key`);
@@ -93,7 +88,7 @@ export const getPKColumn = (columns: SchemaColumns, tableName: string) => {
 
 export const getPKColumnIndex = (columns: SchemaColumns) => {
   const index = (columns || [])
-    .map((v) => Object.values(v.constraints).indexOf("PRIMARY KEY") != -1)
+    .map((v) => (v.constraints || []).indexOf("PRIMARY KEY") != -1)
     .indexOf(true);
   return index;
 };
@@ -112,7 +107,7 @@ export const hasColumnTypeAsColumnName = (columns: Column[]) => {
 export const parseTableName = (chainId: number, tableName: string) => {
   return [
     (tableName || "").replace(
-      new RegExp(`_[${chainId}]+[0-9A-Za-z]+`, "g"),
+      new RegExp(`_[${chainId}]+[0-9A-Za-z_]+`, "g"),
       ""
     ),
   ].reduce((acc, v) => (v ? v : acc), tableName);
