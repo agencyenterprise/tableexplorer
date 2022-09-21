@@ -1,5 +1,13 @@
 import Nullstack, { NullstackNode } from "nullstack";
-import { parseDeleteData, getPKColumn, getPKColumnIndex, parseTableName, parseInsertData, isReadQuery, parseUpdateData } from "../utils/SQLParser";
+import {
+  parseDeleteData,
+  getPKColumn,
+  getPKColumnIndex,
+  parseTableName,
+  parseInsertData,
+  isReadQuery,
+  parseUpdateData,
+} from "../utils/SQLParser";
 import TableNav from "../components/TableNav";
 import UpdateIcon from "../assets/Update";
 import DeleteIcon from "../assets/Delete";
@@ -7,8 +15,11 @@ import ReadIcon from "../assets/Read";
 import InsertIcon from "../assets/Insert";
 import Loader from "../assets/Loader";
 import CodeEditor from "../components/CodeEditor";
-import { CustomClientContext, WithNullstackContext } from "../types/CustomContexts";
-import { ConnectOptions, SchemaColumns } from "@tableland/sdk";
+import {
+  CustomClientContext,
+  WithNullstackContext,
+} from "../types/CustomContexts";
+import { ConnectOptions, ReadQueryResult, SchemaColumns } from "@tableland/sdk";
 import { SchemaQueryResult } from "@tableland/sdk";
 
 declare function TableHeader(): NullstackNode;
@@ -19,7 +30,7 @@ declare function TableBody(): NullstackNode;
 class Table extends Nullstack {
   name = "";
   query = "";
-  data;
+  data: ReadQueryResult<any[]>;
   loading = false;
   limit = 50;
   schema: SchemaQueryResult | null = null;
@@ -32,11 +43,16 @@ class Table extends Nullstack {
 
   options: ConnectOptions;
 
+  hasPk = true;
+
   async readQuery(context?: CustomClientContext) {
     const { __tableland, instances } = context!;
     try {
       const data = await __tableland.read(this.query);
       this.data = data;
+      if (this.pkColumn) {
+        this.hasPk = !!data.columns.find((c) => c.name === this.pkColumn);
+      }
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -64,7 +80,9 @@ class Table extends Nullstack {
       await __tableland.write(this.query);
       const data = await __tableland.read(this.baseQuery());
       this.data = data;
-      instances.toast._showInfoToast(`Table ${this.name} updated with success!`);
+      instances.toast._showInfoToast(
+        `Table ${this.name} updated with success!`
+      );
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -117,10 +135,17 @@ class Table extends Nullstack {
       </thead>
     );
   }
-  async deleteRecord({ __tableland, recordId, recordIndex, instances }: WithNullstackContext<{ recordId: number; recordIndex: number }>) {
+  async deleteRecord({
+    __tableland,
+    recordId,
+    recordIndex,
+    instances,
+  }: WithNullstackContext<{ recordId: number; recordIndex: number }>) {
     this.loading = true;
     try {
-      await __tableland!.write(parseDeleteData(this.name, recordId, this.pkColumn));
+      await __tableland!.write(
+        parseDeleteData(this.name, recordId, this.pkColumn)
+      );
       this.data.rows = this.data.rows.filter((r) => r[recordIndex] != recordId);
       instances!.toast._showInfoToast(`Row deleted from table ${this.name}`);
     } catch (err) {
@@ -128,9 +153,6 @@ class Table extends Nullstack {
     } finally {
       this.loading = false;
     }
-  }
-  redirectToUpdatePage({ router, recordId }) {
-    router.path = `/updateData?name=${this.name}&id=${recordId}&column=${this.pkColumn}`;
   }
   renderActionBtn({ row }) {
     const deleteWrapper = () =>
@@ -148,16 +170,28 @@ class Table extends Nullstack {
       <>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex items-center h-full">
-            <button class="text-green-standard hover:text-green-100" onclick={updateQuery} disabled={this.loading}>
-              <UpdateIcon />
-            </button>
+            {this.pkColumn && this.hasPk && (
+              <button
+                class="text-green-standard hover:text-green-100"
+                onclick={updateQuery}
+                disabled={this.loading}
+              >
+                <UpdateIcon />
+              </button>
+            )}
           </div>
         </td>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex items-center h-full">
-            <button class="text-red-standard hover:text-red-400" onclick={deleteWrapper} disabled={this.loading}>
-              <DeleteIcon />
-            </button>
+            {this.pkColumn && this.hasPk && (
+              <button
+                class="text-red-standard hover:text-red-400"
+                onclick={deleteWrapper}
+                disabled={this.loading}
+              >
+                <DeleteIcon />
+              </button>
+            )}
           </div>
         </td>
       </>
@@ -203,18 +237,27 @@ class Table extends Nullstack {
     const { instances } = context!;
     const removePkColumns = () =>
       Object.entries(this.tableInput).reduce((acc: any[], v) => {
-        return v[1].name == this.pkColumn && v[1].type == "integer" ? acc : [{ ...v[1], value: "" }, ...acc];
+        return v[1].name == this.pkColumn && v[1].type == "integer"
+          ? acc
+          : [{ ...v[1], value: "" }, ...acc];
       }, []);
     const pkColumn = () =>
       Object.entries(this.tableInput).reduce((acc: any[], v) => {
-        return v[1].name != this.pkColumn ? acc : [{ ...v[1], value: "" }, ...acc];
+        return v[1].name != this.pkColumn
+          ? acc
+          : [{ ...v[1], value: "" }, ...acc];
       }, []);
     const filteredColumns = removePkColumns();
     const columnInputs = filteredColumns.length ? filteredColumns : pkColumn();
     this.query = parseInsertData(columnInputs, this.name);
     instances.code_editor.setEditorValue({ query: this.query });
   }
-  addUpdateQuery({ instances, recordId, pkColumn, row }: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
+  addUpdateQuery({
+    instances,
+    recordId,
+    pkColumn,
+    row,
+  }: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
     const updateInput = Object.keys(this.tableInput).map((v) => {
       this.tableInput[v].value = row[v];
       return this.tableInput[v];
@@ -240,18 +283,39 @@ class Table extends Nullstack {
       <div class="overflow-y-auto h-full">
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12 overflow-y-auto">
-          <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId!, this.name)}</h1>
-          <CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} />
+          <h1 class="text-2xl mb-6">
+            {parseTableName(this.options?.chainId!, this.name)}
+          </h1>
+          <CodeEditor
+            key="code_editor"
+            value={this.query}
+            onchange={this.onEditorChange}
+          />
           <div class="flex flex-col items-start justify-start">
-            <span class="my-4 w-44 cursor-pointer" onclick={this.insertOrRead} title={this.readOrInsert}>
-              {this.readOrInsert == this.readString ? <ReadIcon width={25} height={25} /> : <InsertIcon width={25} height={25} />}
+            <span
+              class="my-4 w-44 cursor-pointer"
+              onclick={this.insertOrRead}
+              title={this.readOrInsert}
+            >
+              {this.readOrInsert == this.readString ? (
+                <ReadIcon width={25} height={25} />
+              ) : (
+                <InsertIcon width={25} height={25} />
+              )}
             </span>
-            <button class="btn-primary my-4" onclick={this.runQuery} disabled={this.loading}>
+            <button
+              class="btn-primary my-4"
+              onclick={this.runQuery}
+              disabled={this.loading}
+            >
               Run Query
             </button>
           </div>
 
-          <div class="py-10 overflow-auto border-solid border" style="max-width: calc(100% - 10px); max-height: 800px">
+          <div
+            class="py-10 overflow-auto border-solid border"
+            style="max-width: calc(100% - 10px); max-height: 800px"
+          >
             {this.loading ? <Loader width={50} height={50} /> : <TableData />}
           </div>
         </div>
