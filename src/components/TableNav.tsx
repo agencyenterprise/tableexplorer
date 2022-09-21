@@ -2,7 +2,7 @@ import Nullstack from "nullstack";
 import { CustomServerContext } from "../types/CustomContexts";
 
 function getActiveStyle(path, route) {
-  if (path === route) return "border-bottom: 1px solid #fff;";
+  if (path === route) return "border-bottom: 4px solid #404040;";
   return "";
 }
 
