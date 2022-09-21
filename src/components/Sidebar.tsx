@@ -1,23 +1,35 @@
-import Nullstack from "nullstack";
-import HomeIcon from "./Home";
-import { parseTableName } from "../utils/SQLParser";
-import Loader from "../components/Loader";
+import { ConnectOptions, TableMetadata } from "@tableland/sdk";
+import Nullstack, { NullstackNode } from "nullstack";
+import Loader from "../assets/Loader";
 import TablelandLogo from "../assets/TablelandLogo";
-import DeleteIcon from "./Delete";
+import {
+  CustomClientContext, WithCustomServerContext,
+  WithNullstackContext
+} from "../types/CustomContexts";
+import { parseTableName } from "../utils/SQLParser";
+
+declare function ListItem(): NullstackNode;
+
+import DeleteIcon from "../assets/Delete";
 class Sidebar extends Nullstack {
-  tables = [];
+  tables: ({ name: string; imported: boolean; } | TableMetadata)[] = [];
   showInput = false;
   loading = false;
   tableToImport = "";
 
-  static async tablesFromDb({ prisma, signerAddress }) {
+  options: ConnectOptions;
+
+  static async tablesFromDb({
+    prisma,
+    signerAddress,
+  }: WithCustomServerContext<{ signerAddress: string }>) {
     try {
-      const tables = await prisma.tableUser.findMany({
+      const tables = await prisma!.tableUser.findMany({
         where: {
           userAddress: signerAddress,
         },
       });
-      return tables.map((item) => ({
+      return tables!.map((item) => ({
         name: item.tableName,
         imported: true,
       }));
@@ -26,24 +38,31 @@ class Sidebar extends Nullstack {
     }
     return [];
   }
-  static async deleteDbTable({prisma, signerAddress, tableName}) {
+  static async deleteDbTable({
+    prisma,
+    signerAddress,
+    tableName,
+  }: WithCustomServerContext<{ signerAddress: string; tableName: string }>) {
     try {
-      await prisma.tableUser.delete({
+      await prisma!.tableUser.delete({
         where: {
-          tableName_userAddress: {tableName, userAddress: signerAddress}
-        }
-        
-      })
-      return true
-    } catch(err) {
-      console.log(err)
+          tableName_userAddress: { tableName, userAddress: signerAddress },
+        },
+      });
+      return true;
+    } catch (err) {
+      console.log(err);
     }
-    return false
+    return false;
   }
 
-  static async insertDbTable({ prisma, signerAddress, tableName }) {
+  static async insertDbTable({
+    prisma,
+    signerAddress,
+    tableName,
+  }: WithCustomServerContext<{ signerAddress: string; tableName: string }>) {
     try {
-      await prisma.tableUser.upsert({
+      await prisma!.tableUser.upsert({
         where: {
           tableName_userAddress: { tableName, userAddress: signerAddress },
         },
@@ -59,24 +78,38 @@ class Sidebar extends Nullstack {
     }
     return false;
   }
-  async hasTable({__tableland, tableName}) {
+  async hasTable({
+    __tableland,
+    tableName,
+  }: WithNullstackContext<{ tableName: string }>) {
     try {
       const query = `SELECT * FROM ${tableName} LIMIT 1;`;
-      await __tableland.read(query);
-    } catch(err) {
-      throw new Error(`Table ${tableName} does not exists`)
+      await __tableland!.read(query);
+    } catch (err) {
+      throw new Error(`Table ${tableName} does not exists`);
     }
   }
-  async removeTable({__tableland, instances, tableName}) {
-    this.loading = true
+  async removeTable({
+    __tableland,
+    instances,
+    tableName,
+  }: WithNullstackContext<{ tableName: string }>) {
+    this.loading = true;
     try {
-      await this.deleteDbTable({signerAddress: __tableland.signerAddress, tableName})
-      await this.getDatabases()
-      instances.toast._showInfoToast(`Table ${tableName} removed with success!`)
-    } catch(err) {
-      instances.toast._showErrorToast(`Error while removing table ${tableName}`)
+      await Sidebar.deleteDbTable({
+        signerAddress: __tableland!.signerAddress!,
+        tableName,
+      });
+      await this.getDatabases();
+      instances!.toast._showInfoToast(
+        `Table ${tableName} removed with success!`
+      );
+    } catch (err) {
+      instances!.toast._showErrorToast(
+        `Error while removing table ${tableName}`
+      );
     } finally {
-      this.loading = false
+      this.loading = false;
     }
   }
   async importTable({ __tableland, instances }) {
@@ -84,15 +117,15 @@ class Sidebar extends Nullstack {
     this.showInput = !this.showInput;
     try {
       if (!this.showInput && this.tableToImport) {
-        await this.hasTable({tableName: this.tableToImport})
-        await this.insertDbTable({
+        await this.hasTable({ tableName: this.tableToImport });
+        await Sidebar.insertDbTable({
           signerAddress: __tableland.signerAddress,
           tableName: this.tableToImport,
         });
         await this.getDatabases();
         instances.toast._showInfoToast(`Table imported with success!`);
       }
-      this.tableToImport = ""
+      this.tableToImport = "";
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     } finally {
@@ -100,17 +133,16 @@ class Sidebar extends Nullstack {
     }
   }
 
-  async getDatabases({ __tableland, instances }) {
+  async getDatabases(context?: CustomClientContext) {
+    const { __tableland, instances } = context!;
     try {
-      const listFromDB = this.tablesFromDb({
-        signerAddress: __tableland.signerAddress,
+      const listFromDB = Sidebar.tablesFromDb({
+        signerAddress: __tableland.signerAddress!,
       });
       const listFromChain = await __tableland.list();
 
       const tableList = await Promise.all([listFromChain, listFromDB]);
-      this.tables = tableList
-        .flat()
-        .filter((v) => !!v);
+      this.tables = tableList.flat().filter((v) => !!v);
       return;
     } catch (err) {
       instances.toast._showErrorToast("Unexpected Error!");
@@ -118,7 +150,7 @@ class Sidebar extends Nullstack {
     this.tables = [];
   }
 
-  hydrate({ __tableland }) {
+  hydrate({ __tableland }: CustomClientContext) {
     this.options = __tableland?.options;
     this.getDatabases();
   }
@@ -126,13 +158,19 @@ class Sidebar extends Nullstack {
   renderListItem({ list, params }) {
     const style =
       params.name === list.name ? "color: #E1C2D8; font-weight: bold;" : "";
-    const removeTableAction = () => this.removeTable({tableName: list.name})
+    const removeTableAction = () => this.removeTable({ tableName: list.name });
     return (
       <div class="flex justify-between">
-      <a style={style} href={`/table?name=${list.name}`} class="px-3">
-        {parseTableName(this.options?.chainId, list.name)}
-      </a>
-      {list.imported && <div class="pr-2"><button class="hover:text-button-hover" onclick={removeTableAction}><DeleteIcon width={18} height={18}/></button></div>}
+        <a style={style} href={`/table?name=${list.name}`} class="px-3">
+          {parseTableName(this.options?.chainId!, list.name)}
+        </a>
+        {list.imported && (
+          <div class="pr-2">
+            <button class="hover:text-button-hover" onclick={removeTableAction}>
+              <DeleteIcon width={18} height={18} />
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -142,7 +180,7 @@ class Sidebar extends Nullstack {
     context.__tableland = undefined;
   }
 
-  render({ __tableland }) {
+  render({ __tableland }: CustomClientContext) {
     return (
       <aside class="w-full max-w-[350px] px-6 pt-2 pb-6 flex flex-col border-r h-full justify-between overflow-x-auto">
         <div class="flex flex-col gap-12 pr-3">
@@ -155,11 +193,11 @@ class Sidebar extends Nullstack {
                 <TablelandLogo />
               </div>
               {[
-                __tableland.signerAddress.substring(0, 4),
-                __tableland.signerAddress.substring(
-                  __tableland.signerAddress.length - 5,
-                  __tableland.signerAddress - 1
-                ),
+                __tableland.signerAddress?.substring(0, 4)!,
+                __tableland.signerAddress?.substring(
+                  __tableland.signerAddress?.length - 5!,
+                  __tableland.signerAddress.length - 1!
+                )!,
               ].join("...")}
             </div>
           </a>
@@ -196,9 +234,9 @@ class Sidebar extends Nullstack {
           </div>
         </div>
         <div class="pt-5">
-        <button class="btn-primary w-56 " onclick={this.logout}>
-          Logout
-        </button>
+          <button class="btn-primary w-56 " onclick={this.logout}>
+            Logout
+          </button>
         </div>
       </aside>
     );

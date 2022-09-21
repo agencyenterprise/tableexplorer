@@ -1,4 +1,5 @@
 import Nullstack from "nullstack";
+import { CustomServerContext } from "../types/CustomContexts";
 
 function getActiveStyle(path, route) {
   if (path === route) return "border-bottom: 1px solid #fff;";
@@ -9,7 +10,7 @@ class TableNav extends Nullstack {
   route = "";
   query = "";
 
-  initiate({ router }) {
+  initiate({ router }: CustomServerContext) {
     let splittedRoute = router.url.split("?");
     this.route = splittedRoute[0];
     this.query = splittedRoute[1] || "";

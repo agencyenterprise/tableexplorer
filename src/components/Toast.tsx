@@ -15,16 +15,19 @@ class Toast extends Nullstack {
     }
     return message;
   }
-  _showErrorToast(message) {
+  _showErrorToast(message: string) {
     const parsedMessage = message ? message : "Unexpected Error!";
-    this._showToast(this.parseErrorMessages({ message: parsedMessage }), "error");
+    this._showToast(
+      this.parseErrorMessages({ message: parsedMessage }),
+      "error"
+    );
   }
 
-  _showInfoToast(message) {
+  _showInfoToast(message: string) {
     this._showToast(message, "info");
   }
 
-  _showToast(message, type) {
+  _showToast(message: string, type: "error" | "info") {
     Toastify({
       text: message,
       duration: 5000,

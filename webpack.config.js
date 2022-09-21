@@ -33,6 +33,20 @@ function customClient(...args) {
       Buffer: ["buffer", "Buffer"],
     })
   );
+  
+  const rule = config.module.rules.find((rule) => rule.test.test('.css'));
+  
+  rule.use.push({
+    loader: require.resolve('postcss-loader'),
+    options: {
+      postcssOptions: {
+        plugins: {
+          tailwindcss: {},
+        }
+      },
+    },
+  });
+
   // config.plugins.push(
   //   new MonacoWebpackPlugin({
   //     languages: ["sql"],

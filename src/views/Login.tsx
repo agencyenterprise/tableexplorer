@@ -1,31 +1,33 @@
 import Nullstack from "nullstack";
-import { connect } from "@tableland/sdk";
+import { connect, Connection } from "@tableland/sdk";
+import { CustomClientContext } from "../types/CustomContexts";
 
 class Login extends Nullstack {
-  async connectWallet(context) {
-    let tableland = await connect({
+  async connectWallet(context: CustomClientContext) {
+    console.log("context", context);
+    let tableland: Connection = await connect({
       network: "testnet",
       chain: "polygon-mumbai",
     });
     await tableland.siwe();
-    tableland.signerAddress = await tableland.signer.getAddress();
+    const signerAddress = await tableland.signer?.getAddress();
     context.__tableland = tableland;
-    localStorage.setItem("@tltoken", tableland.token.token);
-    localStorage.setItem("@tlAddress", context.__tableland.signerAddress);
+    context.__tableland.signerAddress = signerAddress;
+    localStorage.setItem("@tltoken", tableland.token?.token!);
+    localStorage.setItem("@tlAddress", signerAddress!);
   }
 
-  async hydrate(context) {
+  async hydrate(context: CustomClientContext) {
     const token = localStorage.getItem("@tltoken");
     const address = localStorage.getItem("@tlAddress");
     if (token && address) {
-      const tableland = await connect({
+      const __tableland = await connect({
         network: "testnet",
         chain: "polygon-mumbai",
-        token,
+        token: { token: token },
       });
 
-      context.__tableland = tableland;
-      context.__tableland.token = { token: token };
+      context.__tableland = __tableland;
       context.__tableland.signerAddress = address;
     }
   }
