@@ -251,7 +251,7 @@ class Table extends Nullstack {
             </button>
           </div>
 
-          <div class="py-10 overflow-auto border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
+          <div class="py-10 overflow-auto border-solid border" style="max-width: calc(100% - 10px); max-height: 800px">
             {this.loading ? <Loader width={50} height={50} /> : <TableData />}
           </div>
         </div>

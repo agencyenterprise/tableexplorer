@@ -38,7 +38,7 @@ class CodeEditor extends Nullstack {
   }
   render() {
     return (
-      <div class="border-solid border border-slate-300 h-40">
+      <div class="border-solid border h-40">
         <div class="h-32" id="code-editor" />
       </div>
     );

@@ -39,8 +39,8 @@ class Sidebar extends Nullstack {
   }: WithNullstackContext<{ tableName: string }>) {
     this.loading = true;
     try {
-      await db.tableUser
-        .where({ tableName, userAddress: __tableland.signerAddress })
+      await db!.tableUser
+        .where({ tableName, userAddress: __tableland!.signerAddress })
         .delete();
       await this.getDatabases();
       instances!.toast._showInfoToast(
@@ -63,7 +63,7 @@ class Sidebar extends Nullstack {
 
         await db.tableUser.add({
           tableName: this.tableToImport,
-          userAddress: __tableland.signerAddress,
+          userAddress: __tableland!.signerAddress!,
         });
 
         await this.getDatabases();
@@ -78,7 +78,7 @@ class Sidebar extends Nullstack {
   }
 
   async getDatabases(context?: CustomClientContext) {
-    const { __tableland, instances, db } = context;
+    const { __tableland, instances, db } = context!;
     try {
       const tables = await db.tableUser
         .where({ userAddress: __tableland.signerAddress })
@@ -153,7 +153,7 @@ class Sidebar extends Nullstack {
           </a>
 
           {this.tables && (
-            <nav class="flex flex-col gap-2 max-h-[300px] h-[300px] overflow-y-auto border-solid border-slate-400 border py-2">
+            <nav class="flex flex-col gap-2 max-h-[300px] h-[300px] overflow-y-auto border-solid border py-2">
               {this.tables.map((list) => (
                 <ListItem list={list} />
               ))}
