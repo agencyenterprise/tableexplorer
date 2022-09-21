@@ -51,7 +51,6 @@ class Table extends Nullstack {
         await this.readQuery();
       } else {
         await this.insertData();
-        this.updateToBaseQuery();
       }
     } catch (err) {
       instances.toast._showErrorToast(err.message);
