@@ -22,6 +22,19 @@ export const parseCreateTableSQL = (columns: Column[], tableName: string) => {
   return `CREATE TABLE ${tableName} ${parseCreateTable(columns)}`;
 };
 
+export const parseId = (column: Column, id: any): number | string => {
+  let parseId: number | string | null = null
+  switch (column.type) {
+    case "integer":
+      parseId = (parseInt(id) || "NULL");
+      break;
+    default:
+      parseId = (`'${id}'` || "NULL");
+  }
+  return parseId;
+}
+
+
 export const parseValues = (column) => {
   let value: number | string | null = null;
   switch (column.type) {
@@ -50,7 +63,8 @@ export const parseUpdateData = (
   const values = `${columns
     .map((column) => `${column.name} = ${parseValues(column)}`)
     .join(", ")}`;
-  const updateTemplate = `UPDATE ${tableName} SET ${values}  WHERE ${idColumn} = ${id};`;
+  const idField = columns.find(col => col.name == idColumn)
+  const updateTemplate = `UPDATE ${tableName} SET ${values}  WHERE ${idColumn} = ${parseId(idField!, id)};`;
   return updateTemplate;
 };
 
