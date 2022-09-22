@@ -8,6 +8,7 @@ import {
   isReadQuery,
   parseUpdateData,
   countQuery,
+  buildSelectQuery
 } from "../utils/SQLParser";
 import { range } from "../utils/TableUtils";
 import TableNav from "../components/TableNav";
@@ -44,7 +45,7 @@ class Table extends Nullstack {
   paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number } = {
     currentPage: 0,
     totalPages: 0,
-    rowsPerPage: 10,
+    rowsPerPage: 1,
     totalCount: 0,
   };
   options: ConnectOptions;
@@ -100,7 +101,8 @@ class Table extends Nullstack {
     this.query = this.baseQuery();
   }
   baseQuery() {
-    return `SELECT * FROM ${this.name} LIMIT ${this.limit}`;
+    const offset = this.paginationSettings.currentPage*this.paginationSettings.rowsPerPage
+    return buildSelectQuery(`SELECT * FROM ${this.name} LIMIT ${this.limit}`, this.paginationSettings.rowsPerPage, offset);
   }
   async getTableSchema(context?: CustomClientContext) {
     const { __tableland, instances } = context!;

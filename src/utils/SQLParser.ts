@@ -137,3 +137,20 @@ export const countQuery = (columns: SchemaColumns, tableName: string) => {
   const name = column.name
   return `SELECT count(${name}) from ${tableName};`
 }
+
+export const parseSelectQuery = (query: string) => {
+  const OFFSET = "OFFSET"
+  const LIMIT = "LIMIT"
+  const qTrim = query.trim()
+  const lastSemiColon = qTrim.lastIndexOf(';');
+  const shouldDeleteLastSemiColon = lastSemiColon == qTrim.length - 1 ? ";" : ""
+  const keywords = [...[OFFSET, LIMIT].map(v => v), ...[OFFSET, LIMIT].map(v => v.toLocaleLowerCase())]
+  const removeOffsetLimit = () => keywords.reduce((acc, v) => {acc = acc.replace(new RegExp(`${v}+\\s*[0-9]+`), ""); return acc}, query)
+  return removeOffsetLimit().replace(shouldDeleteLastSemiColon, "").trim()
+}
+
+
+export const buildSelectQuery = (query: string, limit: number = 10, offset: number = 0) => {
+  const parsedQuery = parseSelectQuery(query)
+  return parsedQuery + ` LIMIT ${limit} OFFSET ${offset};`
+}
