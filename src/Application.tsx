@@ -10,7 +10,6 @@ import TablePermissions from "./views/TablePermissions";
 import Toast from "./components/Toast";
 import { CustomClientContext } from "./types/CustomContexts";
 import "../tailwind.css";
-
 class Application extends Nullstack {
   prepare({ page }: NullstackClientContext) {
     page.locale = "en-US";
@@ -21,15 +20,9 @@ class Application extends Nullstack {
       <main class="w-full h-screen">
         {__tableland?.token?.token ? (
           <div class="w-full h-full">
-            <div
-              class="w-full flex justify-between"
-              style="height: calc(100% - 50px)"
-            >
+            <div class="w-full flex justify-between" style="height: calc(100% - 50px)">
               <Sidebar key="sidebar" />
-              <div
-                class="flex flex-col w-full h-full"
-                style="height: calc(100% - 50px); min-width: calc(100% - 300px);"
-              >
+              <div class="flex flex-col w-full h-full" style="height: calc(100% - 50px); min-width: calc(100% - 300px);">
                 <Home route="/" />
                 <Table route="/table" />
                 <TableSchema route="/schema" />

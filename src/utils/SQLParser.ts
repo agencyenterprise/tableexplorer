@@ -130,3 +130,10 @@ export const parseTableName = (chainId: number, tableName: string) => {
 export const isReadQuery = (query: string) => {
   return !!((query || "").toLocaleLowerCase().match(/select/) || []).length;
 };
+
+
+export const countQuery = (columns: SchemaColumns, tableName: string) => {
+  const column = columns[0]
+  const name = column.name
+  return `SELECT count(${name}) from ${tableName};`
+}
