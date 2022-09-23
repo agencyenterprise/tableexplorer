@@ -1,12 +1,12 @@
 import Nullstack, { NullstackNode } from "nullstack";
-import { buildSelectQuery } from "../utils/SQLParser";
+import { buildSelectQuery, rawRecords } from "../utils/SQLParser";
 import { range } from "../utils/TableUtils";
 import UpdateIcon from "../assets/Update";
 import DeleteIcon from "../assets/Delete";
 import Loader from "../assets/Loader";
 import { CustomClientContext } from "../types/CustomContexts";
 import { ConnectOptions, ReadQueryResult, SchemaColumns } from "@tableland/sdk";
-import { SchemaQueryResult } from "@tableland/sdk";
+import PaginationSettings, { IPagination } from "../types/pagination";
 
 declare function TableHeader(): NullstackNode;
 declare function ActionBtn(): NullstackNode;
@@ -17,39 +17,17 @@ declare function TablePaginationButton(): NullstackNode;
 declare function PaginatedTable(): NullstackNode;
 class TableComponent extends Nullstack {
   name = "";
-  query = "";
-  data;
-  loading = false;
-  limit = 50;
-  schema: SchemaQueryResult | null = null;
-  pkColumn = "";
-  pkColumnIndex = -1;
-  tableInput: SchemaColumns;
-  insertString = "Insert";
-  readString = "Read";
-  readOrInsert = "";
-  paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number } = {
-    currentPage: 0,
-    totalPages: 0,
-    rowsPerPage: 2,
-    totalCount: 0,
-  };
-  options: ConnectOptions;
-
-  initiate({ params, schema }: CustomClientContext & { schema: SchemaQueryResult | null }) {
+  rowsPerPageOptions = ["5", "10", "20", "30"];
+  rowsPerPageOption = "5";
+  initiate({ params }: CustomClientContext) {
     this.name = params.name as string;
-    this.readOrInsert = this.insertString;
-    this.schema = schema;
   }
-  baseQuery(
-    context?: CustomClientContext & { paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number } }
-  ) {
+  baseQuery(context?: CustomClientContext & PaginationSettings) {
     const { paginationSettings } = context!;
     const offset = paginationSettings.currentPage * paginationSettings.rowsPerPage;
     const limit = paginationSettings.rowsPerPage;
     const query = `SELECT * FROM ${this.name};`;
-    const newQuery = buildSelectQuery(query, limit, offset);
-    return newQuery;
+    return buildSelectQuery(query, limit, offset);
   }
 
   renderTableHeader(context?: CustomClientContext & { data: ReadQueryResult<any[]> }) {
@@ -72,7 +50,7 @@ class TableComponent extends Nullstack {
       </thead>
     );
   }
-  renderActionBtn({ row, addUpdateQuery, deleteRecord, loading, pkColumn, pkColumnIndex }) {
+  renderActionBtn({ row, addUpdateQuery, deleteRecord, loading, pkColumn, pkColumnIndex, shouldMutate }) {
     const deleteWrapper = () =>
       deleteRecord({
         recordId: row[pkColumnIndex],
@@ -84,18 +62,25 @@ class TableComponent extends Nullstack {
         pkColumn: pkColumn,
         row: row,
       });
+    const mutate = shouldMutate();
+    const disabled = loading || mutate;
     return (
       <>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex items-center h-full">
-            <button class="text-green-standard hover:text-green-100" onclick={updateQuery} disabled={loading}>
+            <button
+              class="text-green-standard hover:text-green-100"
+              style={disabled ? "opacity: 0.5;" : ""}
+              onclick={updateQuery}
+              disabled={disabled}
+            >
               <UpdateIcon />
             </button>
           </div>
         </td>
         <td class="text-sm py-4 whitespace-nowrap">
           <div class="flex items-center h-full">
-            <button class="text-red-standard hover:text-red-400" onclick={deleteWrapper} disabled={loading}>
+            <button class="text-red-standard hover:text-red-400" style={disabled ? "opacity: 0.5;" : ""} onclick={deleteWrapper} disabled={disabled}>
               <DeleteIcon />
             </button>
           </div>
@@ -121,12 +106,13 @@ class TableComponent extends Nullstack {
   renderTablePaginationButton({
     item,
     paginationSettings,
-  }: {
-    paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number };
-    item: any;
-  }) {
-    const changePage = () => {
+    runQuery,
+    instances,
+  }: CustomClientContext & { paginationSettings: IPagination; item: any; runQuery: (context?: CustomClientContext) => Promise<void> }) {
+    const changePage = async () => {
       paginationSettings.currentPage = item.page;
+      instances.code_editor.setEditorValue({ query: this.baseQuery() });
+      await runQuery();
     };
     return (
       <div class="">
@@ -143,7 +129,7 @@ class TableComponent extends Nullstack {
   async nextPaginationButton(
     context?: CustomClientContext & {
       runQuery: (context?: CustomClientContext) => Promise<void>;
-      paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number };
+      paginationSettings: IPagination;
     }
   ) {
     const { instances, runQuery, paginationSettings } = context!;
@@ -156,7 +142,7 @@ class TableComponent extends Nullstack {
   async prevPaginationButton(
     context?: CustomClientContext & {
       runQuery: (context?: CustomClientContext) => Promise<void>;
-      paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number };
+      paginationSettings: IPagination;
     }
   ) {
     const { instances, runQuery, paginationSettings } = context!;
@@ -166,9 +152,7 @@ class TableComponent extends Nullstack {
       await runQuery();
     }
   }
-  renderTablePagination(
-    context?: CustomClientContext & { paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number } }
-  ) {
+  renderTablePagination(context?: CustomClientContext & { paginationSettings: IPagination }) {
     const { paginationSettings } = context!;
     const reachedFinalPage = paginationSettings.currentPage == paginationSettings.totalPages;
     const inFirstPage = !paginationSettings.currentPage;
@@ -201,25 +185,51 @@ class TableComponent extends Nullstack {
   renderPaginatedTable({
     children,
     paginationSettings,
-  }: {
-    children: NullstackNode;
-    paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number };
+    data,
+    runQuery,
+  }: CustomClientContext & {
+    paginationSettings: IPagination;
+    data: ReadQueryResult<any[]>;
+    runQuery: (context?: CustomClientContext) => Promise<void>;
   }) {
     return (
       <div>
+        <div class="py-3">
+          <span class="pr-5">Show</span>
+          <select
+            class="bg-background"
+            name="type"
+            value={this.rowsPerPageOption}
+            onchange={({ event }) => {
+              paginationSettings.rowsPerPage = Number(event.target.value);
+              paginationSettings.currentPage = 0;
+              this.rowsPerPageOption = event.target.value;
+              runQuery();
+            }}
+          >
+            {this.rowsPerPageOptions.map((type) => (
+              <option class="bg-background" value={type}>
+                {type.toLocaleUpperCase()}
+              </option>
+            ))}
+          </select>
+          <span class="pl-5">Entries</span>
+        </div>
         <div class="py-10 overflow-auto border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
           {children}
         </div>
-        <div class="flex justify-between items-center h-full px-2 pt-3">
-          <div>
-            <p>
-              {paginationSettings.rowsPerPage} of {paginationSettings.totalCount} Entries
-            </p>
+        {data && (
+          <div class="flex justify-between items-center h-full px-2 pt-3">
+            <div>
+              <p>
+                {data.rows?.length || 0} of {paginationSettings.totalCount} Entries
+              </p>
+            </div>
+            <div class="pt-3 px-1">
+              <TablePagination />
+            </div>
           </div>
-          <div class="pt-3 px-1">
-            <TablePagination />
-          </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -234,7 +244,7 @@ class TableComponent extends Nullstack {
       <Loader width={50} height={50} />
     );
   }
-  render({ loading }: CustomClientContext & { loading: boolean; schema: SchemaQueryResult | null }) {
+  render({ loading }: CustomClientContext & { loading: boolean }) {
     if (!this.name) return null;
     return (
       <div>
