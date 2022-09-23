@@ -8,7 +8,7 @@ import {
   isReadQuery,
   parseUpdateData,
   countQuery,
-  buildSelectQuery
+  buildSelectQuery,
 } from "../utils/SQLParser";
 import { range } from "../utils/TableUtils";
 import TableNav from "../components/TableNav";
@@ -21,6 +21,7 @@ import CodeEditor from "../components/CodeEditor";
 import { CustomClientContext, WithNullstackContext } from "../types/CustomContexts";
 import { ConnectOptions, SchemaColumns } from "@tableland/sdk";
 import { SchemaQueryResult } from "@tableland/sdk";
+import TableComponent from "../components/TableComponent";
 
 declare function TableHeader(): NullstackNode;
 declare function ActionBtn(): NullstackNode;
@@ -45,7 +46,7 @@ class Table extends Nullstack {
   paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number } = {
     currentPage: 0,
     totalPages: 0,
-    rowsPerPage: 1,
+    rowsPerPage: 2,
     totalCount: 0,
   };
   options: ConnectOptions;
@@ -70,6 +71,7 @@ class Table extends Nullstack {
       } else {
         await this.insertData();
       }
+      await this.getInitialPaginationSettings();
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     } finally {
@@ -92,7 +94,7 @@ class Table extends Nullstack {
     this.options = __tableland?.options;
     const data = await __tableland.read(this.query);
     this.data = data;
-    this.getInitialSettings()
+    this.getInitialSettings();
   }
 
   initiate({ params }) {
@@ -101,34 +103,30 @@ class Table extends Nullstack {
     this.query = this.baseQuery();
   }
   baseQuery() {
-    const offset = this.paginationSettings.currentPage*this.paginationSettings.rowsPerPage
-    const limit = this.paginationSettings.rowsPerPage
-    const query = `SELECT * FROM ${this.name};`
+    const offset = this.paginationSettings.currentPage * this.paginationSettings.rowsPerPage;
+    const limit = this.paginationSettings.rowsPerPage;
+    const query = `SELECT * FROM ${this.name};`;
     const newQuery = buildSelectQuery(query, limit, offset);
-    console.log(newQuery)
-    return newQuery
+    return newQuery;
   }
   async getInitialPaginationSettings(context?: CustomClientContext) {
     const { __tableland } = context!;
     try {
       const countQuery_ = await __tableland.read(countQuery(this.schema?.columns!, this.name));
-      const rowCount = ((countQuery_.rows || [[]])[0][0] || 0);
+      const rowCount = (countQuery_.rows || [[]])[0][0] || 0;
       const count = rowCount ? rowCount - 1 : rowCount;
       this.paginationSettings.totalPages = Math.floor(count / this.paginationSettings.rowsPerPage);
-      this.paginationSettings.currentPage = 0;
       this.paginationSettings.totalCount = rowCount;
-    } catch(err) {
-    }
+    } catch (err) {}
   }
   async getInitialSettings(context?: CustomClientContext) {
     const { instances } = context!;
     try {
-      await this.getTableSchema()
-      await this.getInitialPaginationSettings()
-    } catch(err) {
+      await this.getTableSchema();
+      await this.getInitialPaginationSettings();
+    } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
-    
   }
   async getTableSchema(context?: CustomClientContext) {
     const { __tableland, instances } = context!;
@@ -238,21 +236,25 @@ class Table extends Nullstack {
       </div>
     );
   }
-  nextPaginationButton(context?: CustomClientContext) {
-    const {instances} = context!;
-    this.paginationSettings.totalPages && this.paginationSettings.currentPage <= this.paginationSettings.totalPages && this.paginationSettings.currentPage++ && instances.code_editor.setEditorValue({ query: this.baseQuery() })
+  async nextPaginationButton(context?: CustomClientContext) {
+    const { instances } = context!;
+    if (this.paginationSettings.totalPages && this.paginationSettings.currentPage <= this.paginationSettings.totalPages) {
+      this.paginationSettings.currentPage++;
+      instances.code_editor.setEditorValue({ query: this.baseQuery() });
+      await this.runQuery();
+    }
   }
-  prevPaginationButton(context?: CustomClientContext) {
-    const {instances} = context!;
-    console.log("prev")
-    this.paginationSettings.currentPage >= 0 && this.paginationSettings.currentPage-- && instances.code_editor.setEditorValue({ query: this.baseQuery() })
+  async prevPaginationButton(context?: CustomClientContext) {
+    const { instances } = context!;
+    if (this.paginationSettings.currentPage >= 0) {
+      this.paginationSettings.currentPage--;
+      instances.code_editor.setEditorValue({ query: this.baseQuery() });
+      await this.runQuery();
+    }
   }
   renderTablePagination() {
-    const next = () => this.paginationSettings.totalPages && this.paginationSettings.currentPage <= this.paginationSettings.totalPages && this.paginationSettings.currentPage++ && this.onEditorChange;
-    const prev = () => this.paginationSettings.currentPage >= 0 && this.paginationSettings.currentPage--;
     const reachedFinalPage = this.paginationSettings.currentPage == this.paginationSettings.totalPages;
     const inFirstPage = !this.paginationSettings.currentPage;
-    console.log(this.paginationSettings)
     const selectLimit = (index: number, limit: number = 2): boolean =>
       this.paginationSettings.currentPage <= index + limit && this.paginationSettings.currentPage >= index - limit;
     return (
@@ -267,7 +269,12 @@ class Table extends Nullstack {
           .map((v) => <TablePaginationButton item={v} />)
           .reduce((acc: NullstackNode[], v: NullstackNode, index: number) => (selectLimit(index, 2) ? [...acc, v] : acc), [] as NullstackNode[])}
         <div class="flex min-w-[30px] min-h-[30px] items-center pl-3">
-          <button class="items-center" onclick={this.nextPaginationButton} disabled={reachedFinalPage} style={reachedFinalPage ? "opacity: 0.5;" : ""}>
+          <button
+            class="items-center"
+            onclick={this.nextPaginationButton}
+            disabled={reachedFinalPage}
+            style={reachedFinalPage ? "opacity: 0.5;" : ""}
+          >
             Next
           </button>
         </div>
@@ -276,11 +283,15 @@ class Table extends Nullstack {
   }
   renderPaginatedTable({ children }: { children: NullstackNode }) {
     return (
-      <div class="min-w-full">
-        {children}
+      <div>
+        <div class="py-10 overflow-auto border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
+          {children}
+        </div>
         <div class="flex justify-between items-center h-full px-2 pt-3">
           <div>
-            <p>{this.paginationSettings.rowsPerPage} of {this.paginationSettings.totalCount} Entries</p>
+            <p>
+              {this.paginationSettings.rowsPerPage} of {this.paginationSettings.totalCount} Entries
+            </p>
           </div>
           <div class="pt-3 px-1">
             <TablePagination />
@@ -363,7 +374,7 @@ class Table extends Nullstack {
             </button>
           </div>
 
-          <div class="py-10 overflow-auto border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
+          {/* <div>
             {this.loading ? (
               <Loader width={50} height={50} />
             ) : (
@@ -371,7 +382,16 @@ class Table extends Nullstack {
                 <TableData />
               </PaginatedTable>
             )}
-          </div>
+          </div> */}
+          <TableComponent
+            addUpdateQuery={this.addUpdateQuery}
+            deleteRecord={this.deleteRecord}
+            schema={this.schema}
+            runQuery={this.runQuery}
+            data={this.data}
+            loading={this.loading}
+            paginationSettings={this.paginationSettings}
+          />
         </div>
       </div>
     );
