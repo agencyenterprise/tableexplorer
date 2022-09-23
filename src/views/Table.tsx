@@ -337,12 +337,16 @@ class Table extends Nullstack {
     this.query = parseInsertData(columnInputs, this.name);
     instances.code_editor.setEditorValue({ query: this.query });
   }
-  addUpdateQuery({ instances, recordId, pkColumn, row }: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
+  addUpdateQuery({ instances, recordId, pkColumn, row, params }: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
     const updateInput = Object.keys(this.tableInput).map((v) => {
       this.tableInput[v].value = row[v];
       return this.tableInput[v];
     });
+    console.log(pkColumn)
+    console.log(recordId)
+    console.log(updateInput)
     this.query = parseUpdateData(updateInput, this.name, recordId, pkColumn);
+    params!.href="#editor"
     instances!.code_editor.setEditorValue({ query: this.query });
   }
   updateToBaseQuery(context?: CustomClientContext) {
@@ -362,7 +366,7 @@ class Table extends Nullstack {
     return (
       <div class="overflow-y-auto h-full">
         <TableNav />
-        <div class="w-full min-h-full pt-8 px-12 overflow-y-auto">
+        <div class="w-full min-h-full pt-8 px-12 overflow-y-auto" id="editor">
           <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId!, this.name)}</h1>
           <CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} />
           <div class="flex flex-col items-start justify-start">
@@ -391,6 +395,8 @@ class Table extends Nullstack {
             data={this.data}
             loading={this.loading}
             paginationSettings={this.paginationSettings}
+            pkColumn={this.pkColumn}
+            pkColumnIndex={this.pkColumnIndex}
           />
         </div>
       </div>

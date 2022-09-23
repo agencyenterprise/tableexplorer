@@ -73,19 +73,17 @@ class TableComponent extends Nullstack {
       </thead>
     );
   }
-  redirectToUpdatePage({ router, recordId }) {
-    router.path = `/updateData?name=${this.name}&id=${recordId}&column=${this.pkColumn}`;
-  }
-  renderActionBtn({ row, addUpdateQuery, deleteRecord, loading }) {
+  renderActionBtn({ row, addUpdateQuery, deleteRecord, loading, pkColumn, pkColumnIndex }) {
     const deleteWrapper = () =>
       deleteRecord({
-        recordId: row[this.pkColumnIndex],
-        recordIndex: this.pkColumnIndex,
+        recordId: row[pkColumnIndex],
+        recordIndex: pkColumnIndex,
       });
+    console.log(row)
     const updateQuery = () =>
       addUpdateQuery({
-        recordId: row[this.pkColumnIndex],
-        pkColumn: this.pkColumn,
+        recordId: row[pkColumnIndex],
+        pkColumn: pkColumn,
         row: row,
       });
     return (
