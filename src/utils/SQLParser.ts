@@ -167,6 +167,10 @@ export const hasCountStatement = (query: string) => {
   return !!query.match(/count\s*\(/g)
 }
 
+export const hasSumStatement = (query: string) => {
+  return !!query.match(/sum\s*\(/g)
+}
+
 export const hasJoinStatment = (query: string) => {
   return !!query.toLocaleUpperCase().match(/\s+JOIN\s+/g)
 }
@@ -174,6 +178,7 @@ export const hasJoinStatment = (query: string) => {
 export const rawRecords = (query: string) => {
   const hasCount = () => hasCountStatement(query)
   const hasJoin = () => hasJoinStatment(query)
-  const rules = [hasCount, hasJoin]
+  const hasSum = () => hasSumStatement(query)
+  const rules = [hasCount, hasJoin, hasSum]
   return rules.reduce((acc: boolean, v: () => boolean) => {acc = acc && !v(); return acc}, true)
 }
