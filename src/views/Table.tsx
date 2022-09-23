@@ -92,7 +92,7 @@ class Table extends Nullstack {
     this.options = __tableland?.options;
     const data = await __tableland.read(this.query);
     this.data = data;
-    this.getTableSchema();
+    this.getInitialSettings()
   }
 
   initiate({ params }) {
@@ -102,7 +102,33 @@ class Table extends Nullstack {
   }
   baseQuery() {
     const offset = this.paginationSettings.currentPage*this.paginationSettings.rowsPerPage
-    return buildSelectQuery(`SELECT * FROM ${this.name} LIMIT ${this.limit}`, this.paginationSettings.rowsPerPage, offset);
+    const limit = this.paginationSettings.rowsPerPage
+    const query = `SELECT * FROM ${this.name};`
+    const newQuery = buildSelectQuery(query, limit, offset);
+    console.log(newQuery)
+    return newQuery
+  }
+  async getInitialPaginationSettings(context?: CustomClientContext) {
+    const { __tableland } = context!;
+    try {
+      const countQuery_ = await __tableland.read(countQuery(this.schema?.columns!, this.name));
+      const rowCount = ((countQuery_.rows || [[]])[0][0] || 0);
+      const count = rowCount ? rowCount - 1 : rowCount;
+      this.paginationSettings.totalPages = Math.floor(count / this.paginationSettings.rowsPerPage);
+      this.paginationSettings.currentPage = 0;
+      this.paginationSettings.totalCount = rowCount;
+    } catch(err) {
+    }
+  }
+  async getInitialSettings(context?: CustomClientContext) {
+    const { instances } = context!;
+    try {
+      await this.getTableSchema()
+      await this.getInitialPaginationSettings()
+    } catch(err) {
+      instances.toast._showErrorToast(err.message);
+    }
+    
   }
   async getTableSchema(context?: CustomClientContext) {
     const { __tableland, instances } = context!;
@@ -113,12 +139,6 @@ class Table extends Nullstack {
       this.tableInput = this.populateInputFields({
         columns: this.schema?.columns,
       });
-      const countQuery_ = await __tableland.read(countQuery(this.schema?.columns, this.name));
-      const count = (countQuery_.rows || [[]])[0][0];
-      const count_ = count ? count - 1 : count;
-      this.paginationSettings.totalPages = Math.floor(count_ / this.paginationSettings.rowsPerPage);
-      this.paginationSettings.currentPage = 0;
-      this.paginationSettings.totalCount = count;
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -218,17 +238,27 @@ class Table extends Nullstack {
       </div>
     );
   }
+  nextPaginationButton(context?: CustomClientContext) {
+    const {instances} = context!;
+    this.paginationSettings.totalPages && this.paginationSettings.currentPage <= this.paginationSettings.totalPages && this.paginationSettings.currentPage++ && instances.code_editor.setEditorValue({ query: this.baseQuery() })
+  }
+  prevPaginationButton(context?: CustomClientContext) {
+    const {instances} = context!;
+    console.log("prev")
+    this.paginationSettings.currentPage >= 0 && this.paginationSettings.currentPage-- && instances.code_editor.setEditorValue({ query: this.baseQuery() })
+  }
   renderTablePagination() {
-    const next = () => this.paginationSettings.currentPage <= this.paginationSettings.totalPages && this.paginationSettings.currentPage++;
+    const next = () => this.paginationSettings.totalPages && this.paginationSettings.currentPage <= this.paginationSettings.totalPages && this.paginationSettings.currentPage++ && this.onEditorChange;
     const prev = () => this.paginationSettings.currentPage >= 0 && this.paginationSettings.currentPage--;
-    const reachedFinalPage = this.paginationSettings.currentPage == this.paginationSettings.totalPages - 1;
+    const reachedFinalPage = this.paginationSettings.currentPage == this.paginationSettings.totalPages;
     const inFirstPage = !this.paginationSettings.currentPage;
+    console.log(this.paginationSettings)
     const selectLimit = (index: number, limit: number = 2): boolean =>
       this.paginationSettings.currentPage <= index + limit && this.paginationSettings.currentPage >= index - limit;
     return (
       <div class="flex flex-row">
         <div class="flex min-w-[30px] min-h-[30px] items-center pr-3">
-          <button class="items-center" onclick={prev} disabled={inFirstPage} style={inFirstPage ? "opacity: 0.5;" : ""}>
+          <button class="items-center" onclick={this.prevPaginationButton} disabled={inFirstPage} style={inFirstPage ? "opacity: 0.5;" : ""}>
             Previous
           </button>
         </div>
@@ -237,7 +267,7 @@ class Table extends Nullstack {
           .map((v) => <TablePaginationButton item={v} />)
           .reduce((acc: NullstackNode[], v: NullstackNode, index: number) => (selectLimit(index, 2) ? [...acc, v] : acc), [] as NullstackNode[])}
         <div class="flex min-w-[30px] min-h-[30px] items-center pl-3">
-          <button class="items-center" onclick={next} disabled={reachedFinalPage} style={reachedFinalPage ? "opacity: 0.5;" : ""}>
+          <button class="items-center" onclick={this.nextPaginationButton} disabled={reachedFinalPage} style={reachedFinalPage ? "opacity: 0.5;" : ""}>
             Next
           </button>
         </div>
@@ -250,7 +280,7 @@ class Table extends Nullstack {
         {children}
         <div class="flex justify-between items-center h-full px-2 pt-3">
           <div>
-            <p>100 Entries</p>
+            <p>{this.paginationSettings.rowsPerPage} of {this.paginationSettings.totalCount} Entries</p>
           </div>
           <div class="pt-3 px-1">
             <TablePagination />
