@@ -45,14 +45,14 @@ class Login extends Nullstack {
           </button>
         </div>
         <div class="w-full flex justify-between gap-4">
-          <div class="border rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2">
+          <div class="border-2 rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2">
             <TablelandLogo />
             <p>
               Tableland is a permissionless relational database for web3
               natives. Built for developers, NFT creatores and web3 visionaries.
             </p>
           </div>
-          <div class="border rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2">
+          <div class="border-2 rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2">
             <AELogo />
             <p>
               AE.Studio is the world's most efficient studio in creating custom
