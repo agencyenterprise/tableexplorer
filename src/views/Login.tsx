@@ -36,7 +36,7 @@ class Login extends Nullstack {
 
   render() {
     return (
-      <div class="min-h-screen flex flex-col justify-around px-[5%] pt-[10%] gap-40" style="">
+      <div class="min-h-screen flex flex-col justify-around px-[5%] pt-[10%] gap-40 bg-[url(login_bg.jpg)] bg-contain" style="">
         <div class="w-full flex flex-col justify-center items-center">
           <h1 class="text-4xl">Welcome to TableLand Admin</h1>
           <p class="my-6">Log into your account to join the revolution.</p>
