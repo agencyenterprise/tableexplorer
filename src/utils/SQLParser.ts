@@ -1,7 +1,9 @@
 import { SchemaColumns } from "@tableland/sdk";
 import { TABLE_TYPES } from "./TableTypes";
-import {Column} from "../types/columns"
-
+import { Column } from "../types/columns";
+import { Parser } from "node-sql-parser";
+import {AggrFunc, ColumnRef} from "node-sql-parser/types"
+const parser = new Parser();
 
 export function parseCreateTable(columns: Column[]) {
   let query = "";
@@ -23,17 +25,16 @@ export const parseCreateTableSQL = (columns: Column[], tableName: string) => {
 };
 
 export const parseId = (column: Column, id: any): number | string => {
-  let parseId: number | string | null = null
+  let parseId: number | string | null = null;
   switch (column.type) {
     case "integer":
-      parseId = (parseInt(id) || "NULL");
+      parseId = parseInt(id) || "NULL";
       break;
     default:
-      parseId = (`'${id}'` || "NULL");
+      parseId = `'${id}'` || "NULL";
   }
   return parseId;
-}
-
+};
 
 export const parseValues = (column) => {
   let value: number | string | null = null;
@@ -63,8 +64,11 @@ export const parseUpdateData = (
   const values = `${columns
     .map((column) => `${column.name} = ${parseValues(column)}`)
     .join(", ")}`;
-  const idField = columns.find(col => col.name == idColumn)
-  const updateTemplate = `UPDATE ${tableName} SET ${values}  WHERE ${idColumn} = ${parseId(idField!, id)};`;
+  const idField = columns.find((col) => col.name == idColumn);
+  const updateTemplate = `UPDATE ${tableName} SET ${values}  WHERE ${idColumn} = ${parseId(
+    idField!,
+    id
+  )};`;
   return updateTemplate;
 };
 
@@ -131,54 +135,87 @@ export const isReadQuery = (query: string) => {
   return !!((query || "").toLocaleLowerCase().match(/select/) || []).length;
 };
 
-
 export const countQuery = (columns: SchemaColumns, tableName: string) => {
-  const column = columns[0]
-  const name = column.name
-  return `SELECT count(${name}) from ${tableName};`
-}
+  const column = columns[0];
+  const name = column.name;
+  return `SELECT count(${name}) from ${tableName};`;
+};
 
 export const parseSelectQuery = (query: string) => {
-  const OFFSET = "OFFSET"
-  const LIMIT = "LIMIT"
-  const qTrim = query.trim()
-  const lastSemiColon = qTrim.lastIndexOf(';');
-  const shouldDeleteLastSemiColon = lastSemiColon == qTrim.length - 1 ? ";" : ""
-  const keywords = [...[OFFSET, LIMIT].map(v => v), ...[OFFSET, LIMIT].map(v => v.toLocaleLowerCase())]
-  const removeOffsetLimit = () => keywords.reduce((acc, v) => {acc = acc.replace(new RegExp(`${v}+\\s*[0-9]+`), ""); return acc}, query)
-  return removeOffsetLimit().replace(shouldDeleteLastSemiColon, "").trim()
-}
+  const OFFSET = "OFFSET";
+  const LIMIT = "LIMIT";
+  const qTrim = query.trim();
+  const lastSemiColon = qTrim.lastIndexOf(";");
+  const shouldDeleteLastSemiColon =
+    lastSemiColon == qTrim.length - 1 ? ";" : "";
+  const keywords = [
+    ...[OFFSET, LIMIT].map((v) => v),
+    ...[OFFSET, LIMIT].map((v) => v.toLocaleLowerCase()),
+  ];
+  const removeOffsetLimit = () =>
+    keywords.reduce((acc, v) => {
+      acc = acc.replace(new RegExp(`${v}+\\s*[0-9]+`), "");
+      return acc;
+    }, query);
+  return removeOffsetLimit().replace(shouldDeleteLastSemiColon, "").trim();
+};
 
-
-export const buildSelectQuery = (query: string, limit: number = 10, offset: number = 0) => {
+export const buildSelectQuery = (
+  query: string,
+  limit: number = 10,
+  offset: number = 0
+) => {
   if (!isReadQuery(query)) {
-    return query
+    return query;
   }
   if (!rawRecords(query)) {
-    return query
+    return query;
   }
-  const parsedQuery = parseSelectQuery(query)
-  const hasCountQuery = parsedQuery.match(/count\s*\(/g)
-  return hasCountQuery ? parsedQuery : parsedQuery + ` LIMIT ${limit} OFFSET ${offset};`
-}
-
+  const parsedQuery = parseSelectQuery(query);
+  const hasCountQuery = parsedQuery.match(/count\s*\(/g);
+  return hasCountQuery
+    ? parsedQuery
+    : parsedQuery + ` LIMIT ${limit} OFFSET ${offset};`;
+};
 
 export const hasCountStatement = (query: string) => {
-  return !!query.match(/count\s*\(/g)
-}
+  return !!query.match(/count\s*\(/g);
+};
 
 export const hasSumStatement = (query: string) => {
-  return !!query.match(/sum\s*\(/g)
-}
+  return !!query.match(/sum\s*\(/g);
+};
 
 export const hasJoinStatment = (query: string) => {
-  return !!query.toLocaleUpperCase().match(/\s+JOIN\s+/g)
-}
+  return !!query.toLocaleUpperCase().match(/\s+JOIN\s+/g);
+};
 
 export const rawRecords = (query: string) => {
-  const hasCount = () => hasCountStatement(query)
-  const hasJoin = () => hasJoinStatment(query)
-  const hasSum = () => hasSumStatement(query)
-  const rules = [hasCount, hasJoin, hasSum]
-  return rules.reduce((acc: boolean, v: () => boolean) => {acc = acc && !v(); return acc}, true)
-}
+  const hasCount = () => hasCountStatement(query);
+  const hasJoin = () => hasJoinStatment(query);
+  const hasSum = () => hasSumStatement(query);
+  const rules = [hasCount, hasJoin, hasSum];
+  return rules.reduce((acc: boolean, v: () => boolean) => {
+    acc = acc && !v();
+    return acc;
+  }, true);
+};
+
+export const parseCountQuery = (query: string) => {
+  const ast: Select = parser.astify(
+    "SELECT q.id, q.name, j.skill FROM query_table_1 as q JOIN join_table_2 as j WHERE q.id = j.id"
+  ) as Select;
+  const colRefexpr = { type: 'column_ref', table: 'q', column: 'id' } as ColumnRef
+  const ref = {
+    type: 'aggr_func',
+  name: "count",
+  args: colRefexpr,
+  }
+  //ast.columns = [newColumn]
+  /* const limit_offset = {
+      seperator: 'offset',
+      value: [ { type: 'number', value: 10 }, { type: 'number', value: 0 } ]
+    }
+  ast.limit = limit_offset
+  console.log(parser.sqlify(ast)) */
+};
