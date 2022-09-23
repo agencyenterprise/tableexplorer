@@ -151,6 +151,29 @@ export const parseSelectQuery = (query: string) => {
 
 
 export const buildSelectQuery = (query: string, limit: number = 10, offset: number = 0) => {
+  if (!isReadQuery(query)) {
+    return query
+  }
+  if (!rawRecords(query)) {
+    return query
+  }
   const parsedQuery = parseSelectQuery(query)
-  return parsedQuery + ` LIMIT ${limit} OFFSET ${offset};`
+  const hasCountQuery = parsedQuery.match(/count\s*\(/g)
+  return hasCountQuery ? parsedQuery : parsedQuery + ` LIMIT ${limit} OFFSET ${offset};`
+}
+
+
+export const hasCountStatement = (query: string) => {
+  return !!query.match(/count\s*\(/g)
+}
+
+export const hasJoinStatment = (query: string) => {
+  return !!query.toLocaleUpperCase().match(/\s+JOIN\s+/g)
+}
+
+export const rawRecords = (query: string) => {
+  const hasCount = () => hasCountStatement(query)
+  const hasJoin = () => hasJoinStatment(query)
+  const rules = [hasCount, hasJoin]
+  return rules.reduce((acc: boolean, v: () => boolean) => {acc = acc && !v(); return acc}, true)
 }
