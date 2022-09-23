@@ -172,144 +172,7 @@ class Table extends Nullstack {
       this.loading = false;
     }
   }
-  redirectToUpdatePage({ router, recordId }) {
-    router.path = `/updateData?name=${this.name}&id=${recordId}&column=${this.pkColumn}`;
-  }
-  renderActionBtn({ row }) {
-    const deleteWrapper = () =>
-      this.deleteRecord({
-        recordId: row[this.pkColumnIndex],
-        recordIndex: this.pkColumnIndex,
-      });
-    const updateQuery = () =>
-      this.addUpdateQuery({
-        recordId: row[this.pkColumnIndex],
-        pkColumn: this.pkColumn,
-        row: row,
-      });
-    return (
-      <>
-        <td class="text-sm py-4 whitespace-nowrap">
-          <div class="flex items-center h-full">
-            <button class="text-green-standard hover:text-green-100" onclick={updateQuery} disabled={this.loading}>
-              <UpdateIcon />
-            </button>
-          </div>
-        </td>
-        <td class="text-sm py-4 whitespace-nowrap">
-          <div class="flex items-center h-full">
-            <button class="text-red-standard hover:text-red-400" onclick={deleteWrapper} disabled={this.loading}>
-              <DeleteIcon />
-            </button>
-          </div>
-        </td>
-      </>
-    );
-  }
-  renderTableBody() {
-    return (
-      <tbody>
-        {this.data.rows?.map((row) => (
-          <tr class="border-b">
-            {row.map((item) => (
-              <td class="text-sm px-6 py-4 whitespace-nowrap">{item}</td>
-            ))}
-            <ActionBtn row={row} />
-          </tr>
-        ))}
-      </tbody>
-    );
-  }
-  renderTablePaginationButton({ item }) {
-    const changePage = () => {
-      this.paginationSettings.currentPage = item.page;
-    };
-    return (
-      <div class="">
-        <button
-          class="min-w-[30px] min-h-[30px] items-center px-1 rounded-md"
-          onclick={changePage}
-          style={this.paginationSettings.currentPage == item.page ? "background-color: #E1C2D8" : ""}
-        >
-          {item.page + 1}
-        </button>
-      </div>
-    );
-  }
-  async nextPaginationButton(context?: CustomClientContext) {
-    const { instances } = context!;
-    if (this.paginationSettings.totalPages && this.paginationSettings.currentPage <= this.paginationSettings.totalPages) {
-      this.paginationSettings.currentPage++;
-      instances.code_editor.setEditorValue({ query: this.baseQuery() });
-      await this.runQuery();
-    }
-  }
-  async prevPaginationButton(context?: CustomClientContext) {
-    const { instances } = context!;
-    if (this.paginationSettings.currentPage >= 0) {
-      this.paginationSettings.currentPage--;
-      instances.code_editor.setEditorValue({ query: this.baseQuery() });
-      await this.runQuery();
-    }
-  }
-  renderTablePagination() {
-    const reachedFinalPage = this.paginationSettings.currentPage == this.paginationSettings.totalPages;
-    const inFirstPage = !this.paginationSettings.currentPage;
-    const selectLimit = (index: number, limit: number = 2): boolean =>
-      this.paginationSettings.currentPage <= index + limit && this.paginationSettings.currentPage >= index - limit;
-    return (
-      <div class="flex flex-row">
-        <div class="flex min-w-[30px] min-h-[30px] items-center pr-3">
-          <button class="items-center" onclick={this.prevPaginationButton} disabled={inFirstPage} style={inFirstPage ? "opacity: 0.5;" : ""}>
-            Previous
-          </button>
-        </div>
-        {range(this.paginationSettings.totalPages)
-          .map((v) => ({ page: v }))
-          .map((v) => <TablePaginationButton item={v} />)
-          .reduce((acc: NullstackNode[], v: NullstackNode, index: number) => (selectLimit(index, 2) ? [...acc, v] : acc), [] as NullstackNode[])}
-        <div class="flex min-w-[30px] min-h-[30px] items-center pl-3">
-          <button
-            class="items-center"
-            onclick={this.nextPaginationButton}
-            disabled={reachedFinalPage}
-            style={reachedFinalPage ? "opacity: 0.5;" : ""}
-          >
-            Next
-          </button>
-        </div>
-      </div>
-    );
-  }
-  renderPaginatedTable({ children }: { children: NullstackNode }) {
-    return (
-      <div>
-        <div class="py-10 overflow-auto border-solid border border-slate-300" style="max-width: calc(100% - 10px); max-height: 800px">
-          {children}
-        </div>
-        <div class="flex justify-between items-center h-full px-2 pt-3">
-          <div>
-            <p>
-              {this.paginationSettings.rowsPerPage} of {this.paginationSettings.totalCount} Entries
-            </p>
-          </div>
-          <div class="pt-3 px-1">
-            <TablePagination />
-          </div>
-        </div>
-      </div>
-    );
-  }
-  renderTableData() {
-    return this.data ? (
-      <table class="min-w-full">
-        <TableHeader />
-        <TableBody />
-      </table>
-    ) : (
-      <Loader width={50} height={50} />
-    );
-  }
+
   insertOrRead() {
     if (this.readOrInsert == this.insertString) {
       this.addInsertQuery();
@@ -337,16 +200,14 @@ class Table extends Nullstack {
     this.query = parseInsertData(columnInputs, this.name);
     instances.code_editor.setEditorValue({ query: this.query });
   }
-  addUpdateQuery({ instances, recordId, pkColumn, row, params }: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
+  addUpdateQuery({ instances, recordId, pkColumn, row, ...rest}: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
     const updateInput = Object.keys(this.tableInput).map((v) => {
       this.tableInput[v].value = row[v];
       return this.tableInput[v];
     });
-    console.log(pkColumn)
-    console.log(recordId)
-    console.log(updateInput)
+    document?.getElementById('editor')?.scrollIntoView();
     this.query = parseUpdateData(updateInput, this.name, recordId, pkColumn);
-    params!.href="#editor"
+    
     instances!.code_editor.setEditorValue({ query: this.query });
   }
   updateToBaseQuery(context?: CustomClientContext) {
@@ -368,7 +229,7 @@ class Table extends Nullstack {
         <TableNav />
         <div class="w-full min-h-full pt-8 px-12 overflow-y-auto" id="editor">
           <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId!, this.name)}</h1>
-          <CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} />
+          <div ><CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} /></div>
           <div class="flex flex-col items-start justify-start">
             <span class="my-4 w-44 cursor-pointer" onclick={this.insertOrRead} title={this.readOrInsert}>
               {this.readOrInsert == this.readString ? <ReadIcon width={25} height={25} /> : <InsertIcon width={25} height={25} />}
@@ -377,16 +238,6 @@ class Table extends Nullstack {
               Run Query
             </button>
           </div>
-
-          {/* <div>
-            {this.loading ? (
-              <Loader width={50} height={50} />
-            ) : (
-              <PaginatedTable>
-                <TableData />
-              </PaginatedTable>
-            )}
-          </div> */}
           <TableComponent
             addUpdateQuery={this.addUpdateQuery}
             deleteRecord={this.deleteRecord}

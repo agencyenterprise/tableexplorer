@@ -1,10 +1,10 @@
 import Nullstack, { NullstackNode } from "nullstack";
-import { getPKColumn, getPKColumnIndex, countQuery, buildSelectQuery } from "../utils/SQLParser";
+import { buildSelectQuery } from "../utils/SQLParser";
 import { range } from "../utils/TableUtils";
 import UpdateIcon from "../assets/Update";
 import DeleteIcon from "../assets/Delete";
 import Loader from "../assets/Loader";
-import { CustomClientContext, WithNullstackContext } from "../types/CustomContexts";
+import { CustomClientContext } from "../types/CustomContexts";
 import { ConnectOptions, ReadQueryResult, SchemaColumns } from "@tableland/sdk";
 import { SchemaQueryResult } from "@tableland/sdk";
 
@@ -39,7 +39,6 @@ class TableComponent extends Nullstack {
   initiate({ params, schema }: CustomClientContext & { schema: SchemaQueryResult | null }) {
     this.name = params.name as string;
     this.readOrInsert = this.insertString;
-    this.query = this.baseQuery();
     this.schema = schema;
   }
   baseQuery(
@@ -79,7 +78,6 @@ class TableComponent extends Nullstack {
         recordId: row[pkColumnIndex],
         recordIndex: pkColumnIndex,
       });
-    console.log(row)
     const updateQuery = () =>
       addUpdateQuery({
         recordId: row[pkColumnIndex],
