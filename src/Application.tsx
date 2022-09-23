@@ -15,7 +15,10 @@ class Application extends Nullstack {
     page.locale = "en-US";
   }
 
-  render({ __tableland }: CustomClientContext) {
+  render(context: NullstackClientContext) {
+    
+    const { __tableland } = context as CustomClientContext;
+    
     return (
       <main class="w-full h-screen">
         {__tableland?.token?.token ? (
