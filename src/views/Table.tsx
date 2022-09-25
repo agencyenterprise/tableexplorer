@@ -1,4 +1,4 @@
-import Nullstack, { NullstackNode } from "nullstack";
+import Nullstack from "nullstack";
 import {
   parseDeleteData,
   getPKColumn,
