@@ -23,7 +23,6 @@ class Application extends Nullstack {
       <main class="w-full h-screen">
         <head>
           <meta name="description" content="Log into your account to join the revolution." />
-          <script src="https://unpkg.com/node-sql-parser/umd/mysql.umd.js"></script>
           <meta name="keywords" content="tableland, database, web3, blockchain, " />
           <meta name="author" content="AE Studio" />
         </head>
