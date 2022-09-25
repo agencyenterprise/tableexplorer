@@ -10,6 +10,10 @@ import {
   countQuery,
   buildSelectQuery,
   rawRecords,
+  parseCountQuery,
+  isAggregatorOnly,
+  isInsertRecord,
+  isUpdateRecord,
 } from "../utils/SQLParser";
 import TableNav from "../components/TableNav";
 import ReadIcon from "../assets/Read";
@@ -51,21 +55,24 @@ class Table extends Nullstack {
       instances.toast._showErrorToast(err.message);
     }
   }
-  async runQuery(context?: CustomClientContext) {
-    const { instances } = context!;
+  async runQuery(context?: WithNullstackContext<{ resetPagination: boolean }>) {
+    const { instances, resetPagination } = context!;
     this.loading = true;
     try {
-      this.query = instances.code_editor.getEditorValue();
+      this.query = instances?.code_editor.getEditorValue();
 
       const isRead = isReadQuery(this.query);
       if (isRead) {
+        if (resetPagination) {
+          this.paginationSettings.currentPage = 0;
+        }
         await this.readQuery();
       } else {
         await this.insertData();
       }
       await this.getInitialPaginationSettings();
     } catch (err) {
-      instances.toast._showErrorToast(err.message);
+      instances?.toast._showErrorToast(err.message);
     } finally {
       this.loading = false;
     }
@@ -79,9 +86,13 @@ class Table extends Nullstack {
     const { __tableland, instances } = context!;
     try {
       await __tableland.write(this.query);
-      const data = await __tableland.read(this.fallbackQuery());
+      this.paginationSettings.currentPage = 0;
+      const fallbackSQL = buildSelectQuery(this.fallbackQuery(), 5, 0);
+      instances.code_editor.setEditorValue({ query: fallbackSQL });
+      const data = await __tableland.read(fallbackSQL);
       this.data = data;
       instances.toast._showInfoToast(`Table ${this.name} updated with success!`);
+      this.readOrInsert = this.readString;
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -111,20 +122,27 @@ class Table extends Nullstack {
     const limit = this.paginationSettings.rowsPerPage;
     const query = `SELECT * FROM ${this.name};`;
     const newQuery = buildSelectQuery(query, limit, offset);
+    console.log("newQuery");
+    console.log(newQuery);
     return newQuery;
   }
   async getInitialPaginationSettings(context?: CustomClientContext) {
     const { __tableland } = context!;
     try {
-      const countQuery_ = await __tableland.read(countQuery(this.schema?.columns!, this.name));
+      const query = parseCountQuery(this.query);
+      console.log(query);
+      const countQuery_ = await __tableland.read(query);
+
       const rowCount = (countQuery_.rows || [[]])[0][0] || 0;
       const count = rowCount ? rowCount - 1 : rowCount;
       const totalPages = Math.floor(count / this.paginationSettings.rowsPerPage);
-      const isNotRawSelect = !rawRecords(this.query);
-      this.paginationSettings.totalPages = isNotRawSelect ? 0 : totalPages;
-      this.paginationSettings.totalCount = isNotRawSelect ? this.data?.rows.length : rowCount;
-      this.paginationSettings.currentPage = isNotRawSelect ? 0 : this.paginationSettings.currentPage;
-    } catch (err) {}
+      const aggregatorOnly = isAggregatorOnly(this.query);
+      this.paginationSettings.totalPages = aggregatorOnly ? 0 : totalPages;
+      this.paginationSettings.totalCount = aggregatorOnly ? this.data?.rows.length : rowCount;
+      this.paginationSettings.currentPage = aggregatorOnly ? 0 : this.paginationSettings.currentPage;
+    } catch (err) {
+      console.log(err);
+    }
   }
   async getInitialSettings(context?: CustomClientContext) {
     const { instances } = context!;
@@ -171,7 +189,11 @@ class Table extends Nullstack {
     this.loading = true;
     try {
       await __tableland!.write(parseDeleteData(this.name, recordId, this.pkColumn));
-      this.data!.rows = this.data!.rows.filter((r) => r[recordIndex] != recordId);
+      this.paginationSettings.currentPage = 0;
+      const fallbackSQL = buildSelectQuery(this.fallbackQuery(), 5, 0);
+      instances!.code_editor.setEditorValue({ query: fallbackSQL });
+      const data = await __tableland!.read(fallbackSQL);
+      this.data = data;
       instances!.toast._showInfoToast(`Row deleted from table ${this.name}`);
     } catch (err) {
       instances!.toast._showErrorToast(err.message);
@@ -230,10 +252,14 @@ class Table extends Nullstack {
     return r;
   }
   shouldMutate() {
-    return !rawRecords(this.query);
+    return !rawRecords(this.query) || isInsertRecord(this.query);
+  }
+  shouldPaginate() {
+    return !isUpdateRecord(this.query) && !isInsertRecord(this.query);
   }
   render() {
     if (!this.name) return null;
+    const runQueryPaginationReset = () => this.runQuery({ resetPagination: true });
     return (
       <div class="overflow-y-auto h-full">
         <TableNav />
@@ -243,10 +269,10 @@ class Table extends Nullstack {
             <CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} />
           </div>
           <div class="flex flex-col items-start justify-start">
-            <span class="my-4 w-44 cursor-pointer" onclick={this.insertOrRead} title={this.readOrInsert}>
+            <span class="my-4 w-6 cursor-pointer" onclick={this.insertOrRead} title={this.readOrInsert} disabled={this.loading}>
               {this.readOrInsert == this.readString ? <ReadIcon width={25} height={25} /> : <InsertIcon width={25} height={25} />}
             </span>
-            <button class="btn-primary my-4" onclick={this.runQuery} disabled={this.loading}>
+            <button class="btn-primary my-4" onclick={runQueryPaginationReset} disabled={this.loading}>
               Run Query
             </button>
           </div>
@@ -261,6 +287,8 @@ class Table extends Nullstack {
             pkColumn={this.pkColumn}
             pkColumnIndex={this.pkColumnIndex}
             shouldMutate={this.shouldMutate}
+            baseQuery={this.baseQuery}
+            shouldPaginate={this.shouldPaginate}
           />
         </div>
       </div>
