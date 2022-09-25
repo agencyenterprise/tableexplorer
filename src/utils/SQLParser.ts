@@ -122,23 +122,27 @@ export const parseSelectQuery = (query: string) => {
 };
 
 export const buildSelectQuery = (query: string, limit: number = 5, offset: number = 0) => {
-  if (!isReadQuery(query)) {
-    return query;
+  try {
+    if (!isReadQuery(query)) {
+      return query;
+    }
+    const parser = new Parser();
+    const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
+    const limit_offset = {
+      seperator: "offset",
+      value: [
+        { type: "number", value: limit },
+        { type: "number", value: offset },
+      ],
+    };
+    ast.limit = limit_offset;
+    const sql = removeReplaceStatements(parser.sqlify(ast));
+    const originalSQLHasJoin = !!removeReplaceStatements(query).match(/\s+JOIN\s+/g);
+    const newSqlHasInnerJoin = !!sql.match(/\s+INNER\s+JOIN\s+/g);
+    return originalSQLHasJoin && newSqlHasInnerJoin ? removeReplaceStatements(sql, true) : sql;
+  } catch (err) {
+    throw new Error("Please correct your query and try again!");
   }
-  const parser = new Parser();
-  const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
-  const limit_offset = {
-    seperator: "offset",
-    value: [
-      { type: "number", value: limit },
-      { type: "number", value: offset },
-    ],
-  };
-  ast.limit = limit_offset;
-  const sql = removeReplaceStatements(parser.sqlify(ast));
-  const originalSQLHasJoin = !!removeReplaceStatements(query).match(/\s+JOIN\s+/g);
-  const newSqlHasInnerJoin = !!sql.match(/\s+INNER\s+JOIN\s+/g);
-  return originalSQLHasJoin && newSqlHasInnerJoin ? removeReplaceStatements(sql, true) : sql;
 };
 
 export const hasCountStatement = (query: string) => {
@@ -189,38 +193,46 @@ export const isUpdateRecord = (query: string) => {
 };
 
 export const isAggregatorOnly = (query: string) => {
-  const parser = new Parser();
-  const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
-  const hasColumnRef =
-    ast.columns == "*"
-      ? false
-      : (Array.isArray(ast.columns) ? ast.columns : []).reduce((acc: boolean, v: SQLColumn) => {
-          acc = v.expr.type == "aggr_func" && acc;
-          return acc;
-        }, true);
-  return hasColumnRef;
+  try {
+    const parser = new Parser();
+    const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
+    const hasColumnRef =
+      ast.columns == "*"
+        ? false
+        : (Array.isArray(ast.columns) ? ast.columns : []).reduce((acc: boolean, v: SQLColumn) => {
+            acc = v.expr.type == "aggr_func" && acc;
+            return acc;
+          }, true);
+    return hasColumnRef;
+  } catch (err) {
+    throw new Error("Please correct your query and try again!");
+  }
 };
 
 export const parseCountQuery = (query: string) => {
-  const parser = new Parser();
-  const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
-  const colRefexpr = ((Array.isArray(ast.columns) ? ast.columns : []).find((v: SQLColumn) => v.expr.type == "column_ref") as ColumnRef) || {
-    expr: {
-      type: "star",
-      value: "*",
-    },
-  };
-  const countAst = {
-    expr: {
-      type: "aggr_func",
-      name: "COUNT",
-      args: colRefexpr,
-    },
-  } as SQLColumn;
-  ast.columns = [countAst];
-  ast.limit = null;
-  const sql = removeReplaceStatements(parser.sqlify(ast));
-  const originalSQLHasJoin = !!removeReplaceStatements(query).match(/\s+JOIN\s+/g);
-  const newSqlHasInnerJoin = !!sql.match(/\s+INNER\s+JOIN\s+/g);
-  return originalSQLHasJoin && newSqlHasInnerJoin ? removeReplaceStatements(sql, true) : sql;
+  try {
+    const parser = new Parser();
+    const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
+    const colRefexpr = ((Array.isArray(ast.columns) ? ast.columns : []).find((v: SQLColumn) => v.expr.type == "column_ref") as ColumnRef) || {
+      expr: {
+        type: "star",
+        value: "*",
+      },
+    };
+    const countAst = {
+      expr: {
+        type: "aggr_func",
+        name: "COUNT",
+        args: colRefexpr,
+      },
+    } as SQLColumn;
+    ast.columns = [countAst];
+    ast.limit = null;
+    const sql = removeReplaceStatements(parser.sqlify(ast));
+    const originalSQLHasJoin = !!removeReplaceStatements(query).match(/\s+JOIN\s+/g);
+    const newSqlHasInnerJoin = !!sql.match(/\s+INNER\s+JOIN\s+/g);
+    return originalSQLHasJoin && newSqlHasInnerJoin ? removeReplaceStatements(sql, true) : sql;
+  } catch (err) {
+    throw new Error("Please correct your query and try again!");
+  }
 };
