@@ -122,10 +122,7 @@ export const parseSelectQuery = (query: string) => {
 };
 
 export const buildSelectQuery = (query: string, limit: number = 5, offset: number = 0) => {
-  console.log("buildSelectQuery");
-  console.log(limit, offset);
   if (!isReadQuery(query)) {
-    console.log("NO");
     return query;
   }
   const parser = new Parser();
@@ -138,9 +135,7 @@ export const buildSelectQuery = (query: string, limit: number = 5, offset: numbe
     ],
   };
   ast.limit = limit_offset;
-  console.log(ast);
   const sql = removeReplaceStatements(parser.sqlify(ast));
-  console.log(sql);
   const originalSQLHasJoin = !!removeReplaceStatements(query).match(/\s+JOIN\s+/g);
   const newSqlHasInnerJoin = !!sql.match(/\s+INNER\s+JOIN\s+/g);
   return originalSQLHasJoin && newSqlHasInnerJoin ? removeReplaceStatements(sql, true) : sql;

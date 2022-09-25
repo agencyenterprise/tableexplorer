@@ -122,15 +122,12 @@ class Table extends Nullstack {
     const limit = this.paginationSettings.rowsPerPage;
     const query = `SELECT * FROM ${this.name};`;
     const newQuery = buildSelectQuery(query, limit, offset);
-    console.log("newQuery");
-    console.log(newQuery);
     return newQuery;
   }
   async getInitialPaginationSettings(context?: CustomClientContext) {
     const { __tableland } = context!;
     try {
       const query = parseCountQuery(this.query);
-      console.log(query);
       const countQuery_ = await __tableland.read(query);
 
       const rowCount = (countQuery_.rows || [[]])[0][0] || 0;
