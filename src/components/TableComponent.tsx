@@ -1,5 +1,4 @@
 import Nullstack, { NullstackNode } from "nullstack";
-import { buildSelectQuery, rawRecords } from "../utils/SQLParser";
 import { range } from "../utils/TableUtils";
 import UpdateIcon from "../assets/Update";
 import DeleteIcon from "../assets/Delete";
@@ -21,13 +20,6 @@ class TableComponent extends Nullstack {
   rowsPerPageOption = "5";
   initiate({ params }: CustomClientContext) {
     this.name = params.name as string;
-  }
-  baseQuery(context?: CustomClientContext & PaginationSettings) {
-    const { paginationSettings } = context!;
-    const offset = paginationSettings.currentPage * paginationSettings.rowsPerPage;
-    const limit = paginationSettings.rowsPerPage;
-    const query = `SELECT * FROM ${this.name};`;
-    return buildSelectQuery(query, limit, offset);
   }
 
   renderTableHeader(context?: CustomClientContext & { data: ReadQueryResult<any[]> }) {
@@ -108,17 +100,27 @@ class TableComponent extends Nullstack {
     paginationSettings,
     runQuery,
     instances,
-  }: CustomClientContext & { paginationSettings: IPagination; item: any; runQuery: (context?: CustomClientContext) => Promise<void> }) {
+    baseQuery,
+    shouldPaginate,
+  }: CustomClientContext & {
+    paginationSettings: IPagination;
+    item: any;
+    runQuery: (context?: CustomClientContext) => Promise<void>;
+    baseQuery: (context?: CustomClientContext & PaginationSettings) => string;
+    shouldPaginate: () => boolean;
+  }) {
     const changePage = async () => {
       paginationSettings.currentPage = item.page;
-      instances.code_editor.setEditorValue({ query: this.baseQuery() });
+      instances.code_editor.setEditorValue({ query: baseQuery() });
       await runQuery();
     };
+    const disablePagination = !shouldPaginate();
     return (
       <div class="">
         <button
           class="min-w-[30px] min-h-[30px] items-center px-1 rounded-md"
           onclick={changePage}
+          disabled={disablePagination}
           style={paginationSettings.currentPage == item.page ? "background-color: #E1C2D8" : ""}
         >
           {item.page + 1}
@@ -129,33 +131,35 @@ class TableComponent extends Nullstack {
   async nextPaginationButton(
     context?: CustomClientContext & {
       runQuery: (context?: CustomClientContext) => Promise<void>;
+      baseQuery: (context?: CustomClientContext & PaginationSettings) => string;
       paginationSettings: IPagination;
     }
   ) {
-    const { instances, runQuery, paginationSettings } = context!;
+    const { instances, runQuery, paginationSettings, baseQuery } = context!;
     if (paginationSettings.totalPages && paginationSettings.currentPage <= paginationSettings.totalPages) {
       paginationSettings.currentPage++;
-      instances.code_editor.setEditorValue({ query: this.baseQuery() });
+      instances.code_editor.setEditorValue({ query: baseQuery() });
       await runQuery();
     }
   }
   async prevPaginationButton(
     context?: CustomClientContext & {
       runQuery: (context?: CustomClientContext) => Promise<void>;
+      baseQuery: (context?: CustomClientContext & PaginationSettings) => string;
       paginationSettings: IPagination;
     }
   ) {
-    const { instances, runQuery, paginationSettings } = context!;
+    const { instances, runQuery, paginationSettings, baseQuery } = context!;
     if (paginationSettings.currentPage >= 0) {
       paginationSettings.currentPage--;
-      instances.code_editor.setEditorValue({ query: this.baseQuery() });
+      instances.code_editor.setEditorValue({ query: baseQuery() });
       await runQuery();
     }
   }
-  renderTablePagination(context?: CustomClientContext & { paginationSettings: IPagination }) {
-    const { paginationSettings } = context!;
-    const reachedFinalPage = paginationSettings.currentPage == paginationSettings.totalPages;
-    const inFirstPage = !paginationSettings.currentPage;
+  renderTablePagination(context?: CustomClientContext & { paginationSettings: IPagination; shouldPaginate: () => boolean }) {
+    const { paginationSettings, shouldPaginate } = context!;
+    const reachedFinalPage = !shouldPaginate() ? true : paginationSettings.currentPage == paginationSettings.totalPages;
+    const inFirstPage = !shouldPaginate() ? true : !paginationSettings.currentPage;
     const selectLimit = (index: number, limit: number = 2): boolean =>
       paginationSettings.currentPage <= index + limit && paginationSettings.currentPage >= index - limit;
     return (
