@@ -1,6 +1,9 @@
 import Nullstack from "nullstack";
 import { connect, Connection } from "@tableland/sdk";
 import { CustomClientContext } from "../types/CustomContexts";
+import TablelandLogo from "../assets/TablelandLogo";
+import AELogo from "../assets/AELogo";
+import ExternalLinkIcon from "../assets/ExternalLinkIcon";
 
 class Login extends Nullstack {
   async connectWallet(context: CustomClientContext) {
@@ -33,12 +36,44 @@ class Login extends Nullstack {
 
   render() {
     return (
-      <div class="w-full min-h-screen flex flex-col justify-center items-center">
-        <h1 class="text-3xl">Welcome to TableLand Admin</h1>
-        <p class="my-6">First of all, please log in to your account.</p>
-        <button class="btn-primary" onclick={this.connectWallet}>
-          Log In
-        </button>
+      <div
+        class="min-h-screen flex flex-col justify-around px-[5%] pt-[10%] gap-40 bg-[url(login_bg.jpg)] bg-contain"
+        style=""
+      >
+        <div class="w-full flex flex-col justify-center items-center">
+          <h1 class="text-4xl">Welcome to TableLand Admin</h1>
+          <p class="my-6">Log into your account to join the revolution.</p>
+          <button class="btn-primary" onclick={this.connectWallet}>
+            Log In
+          </button>
+        </div>
+        <div class="w-full flex justify-between gap-4">
+          <a href="https://tableland.xyz/" target="blank" class="hover:no-underline">
+            <div class="border-2 rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2 text-[#FFFEFF]">
+              <div class="flex items-center gap-2">
+                <TablelandLogo />
+                <ExternalLinkIcon />
+              </div>
+              <p>
+                Tableland is a permissionless relational database for web3
+                natives. Built for developers, NFT creatores and web3
+                visionaries.
+              </p>
+            </div>
+          </a>
+          <a href="https://ae.studio/" target="blank" class="hover:no-underline">
+            <div class="border-2 rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2 text-[#FFFEFF]">
+              <div class="flex items-center">
+                <AELogo />
+                <ExternalLinkIcon />
+              </div>
+              <p>
+                AE.Studio is the world's most efficient studio in creating
+                custom software and machine learning solitions.
+              </p>
+            </div>
+          </a>
+        </div>
       </div>
     );
   }
