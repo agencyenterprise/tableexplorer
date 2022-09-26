@@ -1,16 +1,10 @@
 import Nullstack, { NullstackNode } from "nullstack";
 import { TABLE_TYPES, TABLE_CONSTRAINTS } from "../utils/TableTypes";
-import {
-  parseCreateTable,
-  hasPK,
-  hasColumnTypeAsColumnName,
-  parseCreateTableSQL,
-} from "../utils/SQLParser";
+import { parseCreateTable, hasPK, hasColumnTypeAsColumnName, parseCreateTableSQL } from "../utils/SQLParser";
 import DeleteIcon from "../assets/Delete";
 import Loader from "../assets/Loader";
 import CodeEditor from "../components/CodeEditor";
 import { CustomClientContext } from "../types/CustomContexts";
-import { SchemaColumns } from "@tableland/sdk";
 import { Column } from "../types/columns";
 
 declare function Column(): NullstackNode;
@@ -46,9 +40,7 @@ class AddTable extends Nullstack {
         prefix: this.prefix,
       });
       await instances.sidebar.getDatabases();
-      instances.toast._showInfoToast(
-        `Table ${this.prefix} created with success!`
-      );
+      instances.toast._showInfoToast(`Table ${this.prefix} created with success!`);
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     } finally {
@@ -110,18 +102,14 @@ class AddTable extends Nullstack {
             <input
               type="checkbox"
               name={`check-${constraint}-${index}`}
-              checked={
-                !!this.columns[index].constraints.find((c) => c === constraint)
-              }
+              checked={!!this.columns[index].constraints.find((c) => c === constraint)}
               onchange={({ event }) => {
                 if (event.target.checked) {
                   if (constraint === "PRIMARY KEY") {
                     // Remove all the other primary keys
                     let newColumns: Column[] = this.columns.map((col) => ({
                       ...col,
-                      constraints: col.constraints.filter(
-                        (c) => c !== constraint
-                      ),
+                      constraints: col.constraints.filter((c) => c !== constraint),
                     }));
                     newColumns[index].constraints.push(constraint);
                     this.columns = newColumns;
@@ -129,9 +117,7 @@ class AddTable extends Nullstack {
                     this.columns[index].constraints.push(constraint);
                   }
                 } else {
-                  this.columns[index].constraints = this.columns[
-                    index
-                  ].constraints.filter((c) => c !== constraint);
+                  this.columns[index].constraints = this.columns[index].constraints.filter((c) => c !== constraint);
                 }
                 this.updateQuery();
               }}
@@ -147,11 +133,7 @@ class AddTable extends Nullstack {
     return (
       <div class="w-full min-h-full pt-8 px-12 overflow-y-auto pb-10">
         <h1 class="text-2xl mb-4 font-bold">Create Table</h1>
-        <CodeEditor
-          key="addtableeditor"
-          value={this.parsedQuery}
-          disabled={true}
-        />
+        <CodeEditor key="addtableeditor" value={this.parsedQuery} disabled={true} />
         <h2 class="text-xl mb-4 font-bold pt-5">Columns</h2>
         <ul class="flex flex-col gap-5 my-4">
           {this.columns.map((_, index) => (
@@ -169,25 +151,12 @@ class AddTable extends Nullstack {
         </button>
         <hr class="my-10" />
         <h2 class="text-xl mb-4 font-bold py-2">
-          <span
-            class="border-dotted border-b"
-            title="Prefix format: [A-Za-z0-9_]+"
-          >
+          <span class="border-dotted border-b" title="Prefix format: [A-Za-z0-9_]+">
             Table Prefix
           </span>
         </h2>
-        <input
-          type="text"
-          bind={this.prefix}
-          placeholder="Table Prefix"
-          class="bg-background mb-4"
-          oninput={this.updateQuery}
-        />
-        <button
-          class="btn-primary h-12 w-44"
-          disabled={this.loading}
-          onclick={this.createTable}
-        >
+        <input type="text" bind={this.prefix} placeholder="Table Prefix" class="bg-background mb-4" oninput={this.updateQuery} />
+        <button class="btn-primary h-12 w-44" disabled={this.loading} onclick={this.createTable}>
           {this.loading ? <Loader width={38} height={38} /> : "Create Table"}
         </button>
       </div>

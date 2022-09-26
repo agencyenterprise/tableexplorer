@@ -23,8 +23,6 @@
     "dexie": "^3.2.2",
     "keccak": "^3.0.2",
     "monaco-editor": "^0.34.0",
-    "node-sql-parser": "^4.5.1",
-    "nullstack-tailwind": "^0.2.3",
     "toastify-js": "^1.12.0"
   }
 }

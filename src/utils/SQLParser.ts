@@ -1,9 +1,8 @@
 import { SchemaColumns } from "@tableland/sdk";
 import { TABLE_TYPES } from "./TableTypes";
 import { Column } from "../types/columns";
-import { Parser } from "node-sql-parser";
 import { ColumnRef, Select, Column as SQLColumn, AST } from "node-sql-parser/types";
-
+import * as NodeSQLParser from "./parser.js";
 export function parseCreateTable(columns: Column[]) {
   let query = "";
 
@@ -126,8 +125,8 @@ export const buildSelectQuery = (query: string, limit: number = 5, offset: numbe
     if (!isReadQuery(query)) {
       return query;
     }
-    const parser = new Parser();
-    const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
+    const parser = new NodeSQLParser.Parser();
+    const ast: AST | AST[] = parser.astify(query) as Select;
     const limit_offset = {
       seperator: "offset",
       value: [
@@ -141,6 +140,7 @@ export const buildSelectQuery = (query: string, limit: number = 5, offset: numbe
     const newSqlHasInnerJoin = !!sql.match(/\s+INNER\s+JOIN\s+/g);
     return originalSQLHasJoin && newSqlHasInnerJoin ? removeReplaceStatements(sql, true) : sql;
   } catch (err) {
+    console.log(err);
     throw new Error("Please correct your query and try again!");
   }
 };
@@ -194,8 +194,8 @@ export const isUpdateRecord = (query: string) => {
 
 export const isAggregatorOnly = (query: string) => {
   try {
-    const parser = new Parser();
-    const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
+    const parser = new NodeSQLParser.Parser();
+    const ast: AST | AST[] = parser.astify(query) as Select;
     const hasColumnRef =
       ast.columns == "*"
         ? false
@@ -211,8 +211,8 @@ export const isAggregatorOnly = (query: string) => {
 
 export const parseCountQuery = (query: string) => {
   try {
-    const parser = new Parser();
-    const ast: AST | AST[] = parser.astify(query, { database: "sqlite" }) as Select;
+    const parser = new NodeSQLParser.Parser();
+    const ast: AST | AST[] = parser.astify(query) as Select;
     const colRefexpr = ((Array.isArray(ast.columns) ? ast.columns : []).find((v: SQLColumn) => v.expr.type == "column_ref") as ColumnRef) || {
       expr: {
         type: "star",

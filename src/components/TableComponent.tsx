@@ -54,8 +54,7 @@ class TableComponent extends Nullstack {
         pkColumn: pkColumn,
         row: row,
       });
-    const mutate = shouldMutate();
-    const disabled = loading || mutate;
+    const disabled = shouldMutate();
     return (
       <>
         <td class="text-sm py-4 whitespace-nowrap">

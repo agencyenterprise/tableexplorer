@@ -22,14 +22,8 @@ class Application extends Nullstack {
     return (
       <main class="w-full h-screen">
         <head>
-          <meta
-            name="description"
-            content="Log into your account to join the revolution."
-          />
-          <meta
-            name="keywords"
-            content="tableland, database, web3, blockchain, "
-          />
+          <meta name="description" content="Log into your account to join the revolution." />
+          <meta name="keywords" content="tableland, database, web3, blockchain, " />
           <meta name="author" content="AE Studio" />
         </head>
         {__tableland?.token?.token ? (
