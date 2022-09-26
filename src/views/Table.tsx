@@ -43,7 +43,7 @@ class Table extends Nullstack {
     totalCount: 0,
   };
   options: ConnectOptions;
-
+  hasPk: boolean = true;
   async readQuery(context?: CustomClientContext) {
     const { __tableland, instances } = context!;
     try {
@@ -51,6 +51,9 @@ class Table extends Nullstack {
       instances.code_editor.setEditorValue({ query });
       const data = await __tableland.read(query);
       this.data = data;
+      if (this.pkColumn) {
+        this.hasPk = !!data.columns.find((c) => c.name === this.pkColumn);
+      }
     } catch (err) {
       instances.toast._showErrorToast(err.message);
     }
@@ -127,15 +130,23 @@ class Table extends Nullstack {
   async getInitialPaginationSettings(context?: CustomClientContext) {
     const { __tableland } = context!;
     try {
+      let rowCount: number = 0;
       const query = parseCountQuery(this.query);
       const countQuery_ = await __tableland.read(query);
-
-      const rowCount = (countQuery_.rows || [[]])[0][0] || 0;
+      rowCount = (countQuery_.rows || [[]])[0][0] || 0;
+      if (countQuery_.rows?.length > 1) {
+        rowCount = countQuery_.rows?.length;
+      }
       const count = rowCount ? rowCount - 1 : rowCount;
       const totalPages = Math.floor(count / this.paginationSettings.rowsPerPage);
       const aggregatorOnly = isAggregatorOnly(this.query);
       this.paginationSettings.totalPages = aggregatorOnly ? 0 : totalPages;
-      this.paginationSettings.totalCount = aggregatorOnly ? this.data?.rows.length : rowCount;
+      if (countQuery_.rows?.length >= this.data?.rows?.length! && totalPages == 0) {
+        this.paginationSettings.totalCount = this.data?.rows.length!;
+      } else {
+        this.paginationSettings.totalCount = aggregatorOnly ? this.data?.rows.length || 0 : rowCount;
+      }
+
       this.paginationSettings.currentPage = aggregatorOnly ? 0 : this.paginationSettings.currentPage;
     } catch (err) {
       console.log(err);
@@ -249,10 +260,10 @@ class Table extends Nullstack {
     return r;
   }
   shouldMutate() {
-    return !rawRecords(this.query) || isInsertRecord(this.query);
+    return !rawRecords(this.query) || isInsertRecord(this.query) || !this.hasPk;
   }
   shouldPaginate() {
-    return !isUpdateRecord(this.query) && !isInsertRecord(this.query);
+    return !isInsertRecord(this.query);
   }
   render() {
     if (!this.name) return null;
