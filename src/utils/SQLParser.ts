@@ -122,7 +122,6 @@ export const parseSelectQuery = (query: string) => {
 
 export const buildSelectQuery = (query: string, limit: number = 5, offset: number = 0) => {
   try {
-    console.log(window);
     if (!isReadQuery(query)) {
       return query;
     }
