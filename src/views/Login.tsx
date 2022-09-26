@@ -7,7 +7,6 @@ import ExternalLinkIcon from "../assets/ExternalLinkIcon";
 
 class Login extends Nullstack {
   async connectWallet(context: CustomClientContext) {
-    console.log("context", context);
     let tableland: Connection = await connect({
       network: "testnet",
       chain: "polygon-mumbai",
