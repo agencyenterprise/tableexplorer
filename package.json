@@ -18,13 +18,11 @@
   },
   "dependencies": {
     "@tableland/sdk": "^3.1.2",
+    "@types/node-sql-parser": "^1.1.0",
     "buffer": "^6.0.3",
-    "copy-webpack-plugin": "^11.0.0",
     "dexie": "^3.2.2",
     "keccak": "^3.0.2",
     "monaco-editor": "^0.34.0",
-    "monaco-editor-webpack-plugin": "^7.0.1",
-    "nullstack-tailwind": "^0.2.3",
     "toastify-js": "^1.12.0"
   }
 }
