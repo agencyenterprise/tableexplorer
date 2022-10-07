@@ -10,5 +10,7 @@
     "strictFunctionTypes": true,
     "noEmit": true,
     "allowJs": true
-  }
+  },
+  "include": ["./src", "./scripts", "./test"],
+  "files": ["./hardhat.config.ts"]
 }

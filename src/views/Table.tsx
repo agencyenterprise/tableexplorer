@@ -65,6 +65,7 @@ class Table extends Nullstack {
       this.query = instances?.code_editor.getEditorValue();
 
       const isRead = isReadQuery(this.query);
+      console.log(isRead, this.query)
       if (isRead) {
         if (resetPagination) {
           this.paginationSettings.currentPage = 0;
@@ -88,6 +89,7 @@ class Table extends Nullstack {
   async insertData(context?: CustomClientContext) {
     const { __tableland, instances } = context!;
     try {
+      console.log(this.query)
       await __tableland.write(this.query);
       this.paginationSettings.currentPage = 0;
       const fallbackSQL = buildSelectQuery(this.fallbackQuery(), 5, 0);

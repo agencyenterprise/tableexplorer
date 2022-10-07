@@ -1,0 +1,16 @@
+semi: false
+singleQuote: true
+jsxSingleQuote: true
+trailingComma: 'none'
+printWidth: 130
+arrowParens: 'avoid'
+jsxBracketSameLine: true
+overrides:
+  - files: "*.sol"
+    options:
+      printWidth: 80
+      tabWidth: 2
+      useTabs: false
+      singleQuote: false
+      bracketSpacing: false
+      explicitTypes: always
