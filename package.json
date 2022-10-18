@@ -14,7 +14,8 @@
     "start": "npx nullstack start",
     "vercel-build": "npx nullstack build",
     "start-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css --watch",
-    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css"
+    "build-tailwind": "npx tailwindcss -i ./src/tailwind.css -o ./src/styles.css",
+    "lint": "npx tslint -c tslint.json 'src/**/*.ts*'"
   },
   "dependencies": {
     "@tableland/sdk": "^3.1.2",

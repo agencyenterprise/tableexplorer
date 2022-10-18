@@ -13,7 +13,7 @@ import "../tailwind.css";
 class Application extends Nullstack {
   prepare({ page }: NullstackClientContext) {
     page.locale = "en-US";
-    page.title = "Tableland Admin - By AE.STUDIO";
+    page.title = "TableExplorer - By AE.STUDIO";
   }
 
   render(context: NullstackClientContext) {
@@ -23,8 +23,9 @@ class Application extends Nullstack {
       <main class="w-full h-screen">
         <head>
           <meta name="description" content="Log into your account to join the revolution." />
-          <meta name="keywords" content="tableland, database, web3, blockchain, " />
+          <meta name="keywords" content="tableland, database, web3, blockchain" />
           <meta name="author" content="AE Studio" />
+          <meta property="og:image" content=""></meta>
         </head>
         {__tableland?.token?.token ? (
           <div class="w-full h-full">

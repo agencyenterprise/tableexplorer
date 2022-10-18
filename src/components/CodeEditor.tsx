@@ -16,7 +16,7 @@ class CodeEditor extends Nullstack {
       this.editor = monaco.editor.create(
         document.getElementById("code-editor"),
         {
-          value: value,
+          value,
           language: "sql",
           theme: "vs-dark",
           fontSize: "16px",
