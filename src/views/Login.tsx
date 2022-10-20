@@ -48,7 +48,11 @@ class Login extends Nullstack {
           </button>
         </div>
         <div class="w-full flex justify-between gap-4">
-          <a href="https://tableland.xyz/" target="blank" class="hover:no-underline">
+          <a
+            href="https://tableland.xyz/"
+            target="blank"
+            class="hover:no-underline"
+          >
             <div class="border-2 rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2 text-[#FFFEFF]">
               <div class="flex items-center gap-2">
                 <TablelandLogo />
@@ -61,15 +65,20 @@ class Login extends Nullstack {
               </p>
             </div>
           </a>
-          <a href="https://ae.studio/" target="blank" class="hover:no-underline">
+          <a
+            href="https://ae.studio/"
+            target="blank"
+            class="hover:no-underline"
+          >
             <div class="border-2 rounded-md bg-background-secondary flex flex-col justify-between p-3 w-full gap-2 text-[#FFFEFF]">
               <div class="flex items-center">
                 <AELogo />
                 <ExternalLinkIcon />
               </div>
               <p>
-                AE.Studio is the world's most efficient studio in creating
-                custom software and machine learning solitions.
+                AE Studio is a product development studio building agency
+                increasing products for clients. We have the world’s most
+                effective developers, designers, data scientists {"&"} PMs.
               </p>
             </div>
           </a>
