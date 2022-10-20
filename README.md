@@ -1,4 +1,6 @@
-# <a style="display:flex; align-items: center; width: 100%; justify-content: center; gap: 15px; color: #fff !important; text-decoration:none" href="https://ae.studio/"><img src="https://ae.studio/img/ae.studio-logo.png" width="50"/> AE Studio</a>
+<img src="https://ae.studio/img/ae.studio-logo.png" width="200"/>
+
+Made with ♥️ by <a style="display:flex; align-items: center; width: 100%; justify-content: center; gap: 15px; color: #fff !important; text-decoration:none" href="https://ae.studio/">AE Studio</a>
 
 # Table Explorer
 
