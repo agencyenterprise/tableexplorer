@@ -18,7 +18,7 @@
     "lint": "npx tslint -c tslint.json 'src/**/*.ts*'"
   },
   "dependencies": {
-    "@tableland/sdk": "^3.1.2",
+    "@tableland/sdk": "3.1.2",
     "@types/node-sql-parser": "^1.1.0",
     "buffer": "^6.0.3",
     "dexie": "^3.2.2",
