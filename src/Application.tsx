@@ -96,6 +96,11 @@ class Application extends Nullstack {
         ) : (
           <Login />
         )}
+        <script
+          async
+          defer
+          src="https://scripts.simpleanalyticscdn.com/latest.js"
+        ></script>
       </main>
     );
   }
