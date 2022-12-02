@@ -44,17 +44,8 @@ class Login extends Nullstack {
           <h1 class="text-4xl">Welcome to TableLand Admin</h1>
           <p class="my-6">Log into your account to join the revolution.</p>
           <button class="btn-primary" onclick={this.connectWallet}>
-            Log In
+            Log In (Mumbai)
           </button>
-          <p class="my-6">
-            <div
-              class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
-              role="alert"
-            >
-              <div class="font-bold">Alpha Version</div>
-              <div>Use Mumbai Testnet to connect.</div>
-            </div>
-          </p>
         </div>
         <div class="w-full flex justify-between gap-4">
           <a
