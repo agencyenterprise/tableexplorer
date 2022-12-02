@@ -32,6 +32,7 @@ class Application extends Nullstack {
             content="tableland, database, web3, blockchain"
           />
           <meta name="author" content="AE Studio" />
+          <link rel="icon" type="image/png" href="/tableicon.png" />
 
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://tableexplorer.com/" />
