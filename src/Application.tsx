@@ -13,7 +13,7 @@ import TableSchema from "./views/TableSchema";
 class Application extends Nullstack {
   prepare({ page }: NullstackClientContext) {
     page.locale = "en-US";
-    page.title = "TableExplorer - By AE.STUDIO";
+    page.title = "TableExplorer - An Admin tool for TableLand";
   }
 
   render(context: NullstackClientContext) {
