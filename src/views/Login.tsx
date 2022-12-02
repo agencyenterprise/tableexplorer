@@ -1,9 +1,9 @@
-import Nullstack from "nullstack";
 import { connect, Connection } from "@tableland/sdk";
-import { CustomClientContext } from "../types/CustomContexts";
-import TablelandLogo from "../assets/TablelandLogo";
+import Nullstack from "nullstack";
 import AELogo from "../assets/AELogo";
 import ExternalLinkIcon from "../assets/ExternalLinkIcon";
+import TablelandLogo from "../assets/TablelandLogo";
+import { CustomClientContext } from "../types/CustomContexts";
 
 class Login extends Nullstack {
   async connectWallet(context: CustomClientContext) {
@@ -46,6 +46,15 @@ class Login extends Nullstack {
           <button class="btn-primary" onclick={this.connectWallet}>
             Log In
           </button>
+          <p class="my-6">
+            <div
+              class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+              role="alert"
+            >
+              <div class="font-bold">Alpha Version</div>
+              <div>Use Mumbai Testnet to connect.</div>
+            </div>
+          </p>
         </div>
         <div class="w-full flex justify-between gap-4">
           <a
