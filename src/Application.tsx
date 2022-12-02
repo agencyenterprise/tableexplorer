@@ -26,7 +26,6 @@ class Application extends Nullstack {
       <main class="w-full h-screen">
         <head>
           <title>TableExplorer - An Admin tool for TableLand</title>
-
           <meta
             name="keywords"
             content="tableland, database, web3, blockchain"
@@ -73,7 +72,7 @@ class Application extends Nullstack {
               <Sidebar key="sidebar" />
               <div
                 class="flex flex-col w-full h-full"
-                style="height: calc(100% - 50px); min-width: calc(100% - 300px);"
+                style="height: 100%; min-width: calc(100% - 300px);"
               >
                 <Home route="/" />
                 <Table route="/table" />

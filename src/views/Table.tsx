@@ -1,28 +1,33 @@
-import Nullstack from "nullstack";
 import {
-  parseDeleteData,
+  ConnectOptions,
+  ReadQueryResult,
+  SchemaColumns,
+  SchemaQueryResult,
+} from "@tableland/sdk";
+import Nullstack from "nullstack";
+import InsertIcon from "../assets/Insert";
+import ReadIcon from "../assets/Read";
+import CodeEditor from "../components/CodeEditor";
+import TableComponent from "../components/TableComponent";
+import TableNav from "../components/TableNav";
+import {
+  CustomClientContext,
+  WithNullstackContext,
+} from "../types/CustomContexts";
+import {
+  buildSelectQuery,
   getPKColumn,
   getPKColumnIndex,
-  parseTableName,
-  parseInsertData,
-  isReadQuery,
-  parseUpdateData,
-  countQuery,
-  buildSelectQuery,
-  rawRecords,
-  parseCountQuery,
   isAggregatorOnly,
   isInsertRecord,
-  isUpdateRecord,
+  isReadQuery,
+  parseCountQuery,
+  parseDeleteData,
+  parseInsertData,
+  parseTableName,
+  parseUpdateData,
+  rawRecords,
 } from "../utils/SQLParser";
-import TableNav from "../components/TableNav";
-import ReadIcon from "../assets/Read";
-import InsertIcon from "../assets/Insert";
-import CodeEditor from "../components/CodeEditor";
-import { CustomClientContext, WithNullstackContext } from "../types/CustomContexts";
-import { ConnectOptions, ReadQueryResult, SchemaColumns } from "@tableland/sdk";
-import { SchemaQueryResult } from "@tableland/sdk";
-import TableComponent from "../components/TableComponent";
 
 class Table extends Nullstack {
   name = "";
@@ -36,7 +41,12 @@ class Table extends Nullstack {
   insertString = "Insert";
   readString = "Read";
   readOrInsert = "";
-  paginationSettings: { currentPage: number; totalPages: number; rowsPerPage: number; totalCount: number } = {
+  paginationSettings: {
+    currentPage: number;
+    totalPages: number;
+    rowsPerPage: number;
+    totalCount: number;
+  } = {
     currentPage: 0,
     totalPages: 0,
     rowsPerPage: 5,
@@ -94,7 +104,9 @@ class Table extends Nullstack {
       instances.code_editor.setEditorValue({ query: fallbackSQL });
       const data = await __tableland.read(fallbackSQL);
       this.data = data;
-      instances.toast._showInfoToast(`Table ${this.name} updated with success!`);
+      instances.toast._showInfoToast(
+        `Table ${this.name} updated with success!`
+      );
       this.readOrInsert = this.readString;
     } catch (err) {
       instances.toast._showErrorToast(err.message);
@@ -114,14 +126,16 @@ class Table extends Nullstack {
     this.query = this.baseQuery();
   }
   baseQuery() {
-    const offset = this.paginationSettings.currentPage * this.paginationSettings.rowsPerPage;
+    const offset =
+      this.paginationSettings.currentPage * this.paginationSettings.rowsPerPage;
     const limit = this.paginationSettings.rowsPerPage;
     const query = this.query ? this.query : `SELECT * FROM ${this.name};`;
     const newQuery = buildSelectQuery(query, limit, offset);
     return newQuery;
   }
   fallbackQuery() {
-    const offset = this.paginationSettings.currentPage * this.paginationSettings.rowsPerPage;
+    const offset =
+      this.paginationSettings.currentPage * this.paginationSettings.rowsPerPage;
     const limit = this.paginationSettings.rowsPerPage;
     const query = `SELECT * FROM ${this.name};`;
     const newQuery = buildSelectQuery(query, limit, offset);
@@ -138,16 +152,25 @@ class Table extends Nullstack {
         rowCount = countQuery_.rows?.length;
       }
       const count = rowCount ? rowCount - 1 : rowCount;
-      const totalPages = Math.floor(count / this.paginationSettings.rowsPerPage);
+      const totalPages = Math.floor(
+        count / this.paginationSettings.rowsPerPage
+      );
       const aggregatorOnly = isAggregatorOnly(this.query);
       this.paginationSettings.totalPages = aggregatorOnly ? 0 : totalPages;
-      if (countQuery_.rows?.length >= this.data?.rows?.length! && totalPages == 0) {
+      if (
+        countQuery_.rows?.length >= this.data?.rows?.length! &&
+        totalPages == 0
+      ) {
         this.paginationSettings.totalCount = this.data?.rows.length!;
       } else {
-        this.paginationSettings.totalCount = aggregatorOnly ? this.data?.rows.length || 0 : rowCount;
+        this.paginationSettings.totalCount = aggregatorOnly
+          ? this.data?.rows.length || 0
+          : rowCount;
       }
 
-      this.paginationSettings.currentPage = aggregatorOnly ? 0 : this.paginationSettings.currentPage;
+      this.paginationSettings.currentPage = aggregatorOnly
+        ? 0
+        : this.paginationSettings.currentPage;
     } catch (err) {
       console.log(err);
     }
@@ -193,10 +216,17 @@ class Table extends Nullstack {
       </thead>
     );
   }
-  async deleteRecord({ __tableland, recordId, recordIndex, instances }: WithNullstackContext<{ recordId: number; recordIndex: number }>) {
+  async deleteRecord({
+    __tableland,
+    recordId,
+    recordIndex,
+    instances,
+  }: WithNullstackContext<{ recordId: number; recordIndex: number }>) {
     this.loading = true;
     try {
-      await __tableland!.write(parseDeleteData(this.name, recordId, this.pkColumn));
+      await __tableland!.write(
+        parseDeleteData(this.name, recordId, this.pkColumn)
+      );
       this.paginationSettings.currentPage = 0;
       const fallbackSQL = buildSelectQuery(this.fallbackQuery(), 5, 0);
       instances!.code_editor.setEditorValue({ query: fallbackSQL });
@@ -226,18 +256,28 @@ class Table extends Nullstack {
     const { instances } = context!;
     const removePkColumns = () =>
       Object.entries(this.tableInput).reduce((acc: any[], v) => {
-        return v[1].name == this.pkColumn && v[1].type == "integer" ? acc : [{ ...v[1], value: "" }, ...acc];
+        return v[1].name == this.pkColumn && v[1].type == "integer"
+          ? acc
+          : [{ ...v[1], value: "" }, ...acc];
       }, []);
     const pkColumn = () =>
       Object.entries(this.tableInput).reduce((acc: any[], v) => {
-        return v[1].name != this.pkColumn ? acc : [{ ...v[1], value: "" }, ...acc];
+        return v[1].name != this.pkColumn
+          ? acc
+          : [{ ...v[1], value: "" }, ...acc];
       }, []);
     const filteredColumns = removePkColumns();
     const columnInputs = filteredColumns.length ? filteredColumns : pkColumn();
     this.query = parseInsertData(columnInputs, this.name);
     instances.code_editor.setEditorValue({ query: this.query });
   }
-  addUpdateQuery({ instances, recordId, pkColumn, row, ...rest }: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
+  addUpdateQuery({
+    instances,
+    recordId,
+    pkColumn,
+    row,
+    ...rest
+  }: WithNullstackContext<{ recordId: number; pkColumn: string; row: any }>) {
     const updateInput = Object.keys(this.tableInput).map((v) => {
       this.tableInput[v].value = row[v];
       return this.tableInput[v];
@@ -267,20 +307,43 @@ class Table extends Nullstack {
   }
   render() {
     if (!this.name) return null;
-    const runQueryPaginationReset = () => this.runQuery({ resetPagination: true });
+    const runQueryPaginationReset = () =>
+      this.runQuery({ resetPagination: true });
     return (
       <div class="overflow-y-auto h-full">
         <TableNav />
-        <div class="w-full min-h-full pt-8 px-12 overflow-y-auto" id="editor">
-          <h1 class="text-2xl mb-6">{parseTableName(this.options?.chainId!, this.name)}</h1>
+        <div
+          class="w-full min-h-full pt-8 px-12 overflow-y-auto mb-12"
+          id="editor"
+        >
+          <h1 class="text-2xl mb-6">
+            {parseTableName(this.options?.chainId!, this.name)}
+          </h1>
           <div>
-            <CodeEditor key="code_editor" value={this.query} onchange={this.onEditorChange} />
+            <CodeEditor
+              key="code_editor"
+              value={this.query}
+              onchange={this.onEditorChange}
+            />
           </div>
           <div class="flex flex-col items-start justify-start">
-            <span class="my-4 w-6 cursor-pointer" onclick={this.insertOrRead} title={this.readOrInsert} disabled={this.loading}>
-              {this.readOrInsert == this.readString ? <ReadIcon width={25} height={25} /> : <InsertIcon width={25} height={25} />}
+            <span
+              class="my-4 w-6 cursor-pointer"
+              onclick={this.insertOrRead}
+              title={this.readOrInsert}
+              disabled={this.loading}
+            >
+              {this.readOrInsert == this.readString ? (
+                <ReadIcon width={25} height={25} />
+              ) : (
+                <InsertIcon width={25} height={25} />
+              )}
             </span>
-            <button class="btn-primary my-4" onclick={runQueryPaginationReset} disabled={this.loading}>
+            <button
+              class="btn-primary my-4"
+              onclick={runQueryPaginationReset}
+              disabled={this.loading}
+            >
               Run Query
             </button>
           </div>
