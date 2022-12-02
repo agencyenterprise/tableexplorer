@@ -1551,7 +1551,7 @@
   resolved "https://registry.yarnpkg.com/@tableland/evm/-/evm-2.0.4.tgz#ddc9a608cd04f2a77f2a4b3cb08dfbf52cd9bc95"
   integrity sha512-LCKBk4XViHQSt+iDgS8ZBfGxrQVnqWbKZcLy7yolznu0UvxIO7wta8a0vMfdaElB9sLeN0e8XLzWeD2fHt9lhA==
 
-"@tableland/sdk@^3.1.2":
+"@tableland/sdk@3.1.2":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@tableland/sdk/-/sdk-3.1.2.tgz#f45f78f129208e4bb6a754d3fd8a9587e54a6bf7"
   integrity sha512-5/WTsBgj3bmKEtqL1RHsbTEugvdUpyvYDEVj9QHArnyNcQlEm+L8bTLylo4poccYfmFcBDpAangr/4IjJVBBFA==
@@ -1661,7 +1661,7 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-3.0.1.tgz#5f8f2bca0a5863cb69bc0b0acd88c96cb1d4ae10"
   integrity sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==
 
-"@types/node-sql-parser@^1.1.0":
+"@types/node-sql-parser@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@types/node-sql-parser/-/node-sql-parser-1.1.0.tgz#916d16864e21723e5818c9a603d7ccb1c26ea0ac"
   integrity sha512-Y5hmrXH9+tVA/tJkel12XVMPPgv07UQv44oAt/8l/TI3raKlxbyFYPDLqo71HTQSN4hEbqlXA/ZAZy0AASsz6w==
@@ -2135,7 +2135,7 @@ buffer-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
 
-buffer@^6.0.3:
+buffer@6.0.3:
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-6.0.3.tgz#2ace578459cc8fbe2a70aaa8f52ee63b6a74c6c6"
   integrity sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==
@@ -2461,7 +2461,7 @@ detective@^5.2.1:
     defined "^1.0.0"
     minimist "^1.2.6"
 
-dexie@^3.2.2:
+dexie@3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.2.2.tgz#fa6f2a3c0d6ed0766f8d97a03720056f88fe0e01"
   integrity sha512-q5dC3HPmir2DERlX+toCBbHQXW5MsyrFqPFcovkH9N2S/UW/H3H5AWAB6iEOExeraAu+j+zRDG+zg/D7YhH0qg==
@@ -3223,7 +3223,7 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-keccak@^3.0.2:
+keccak@3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/keccak/-/keccak-3.0.2.tgz#4c2c6e8c54e04f2670ee49fa734eb9da152206e0"
   integrity sha512-PyKKjkH53wDMLGrvmRGSNWgmSxZOUqbnXwKL9tmgbFYA1iAYqW21kfR7mZXV0MlESiefxQQE9X9fTa3X+2MPDQ==
@@ -3397,7 +3397,7 @@ minimist@^1.2.0, minimist@^1.2.6:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
   integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
 
-monaco-editor@^0.34.0:
+monaco-editor@0.34.0:
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.34.0.tgz#b1749870a1f795dbfc4dc03d8e9b646ddcbeefa7"
   integrity sha512-VF+S5zG8wxfinLKLrWcl4WUizMx+LeJrG4PM/M78OhcwocpV0jiyhX/pG6Q9jIOhrb/ckYi6nHnaR5OojlOZCQ==
@@ -4408,7 +4408,7 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-toastify-js@^1.12.0:
+toastify-js@1.12.0:
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/toastify-js/-/toastify-js-1.12.0.tgz#cc1c4f5c7e7380e854e20bedceb51980ea29f64d"
   integrity sha512-HeMHCO9yLPvP9k0apGSdPUWrUbLnxUKNFzgUoZp1PHCLploIX/4DSQ7V8H25ef+h4iO9n0he7ImfcndnN6nDrQ==

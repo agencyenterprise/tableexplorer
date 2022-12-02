@@ -5,11 +5,11 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Table from "./views/Table";
 // import "./styles.css";
-import TableSchema from "./views/TableSchema";
-import TablePermissions from "./views/TablePermissions";
+import "../tailwind.css";
 import Toast from "./components/Toast";
 import { CustomClientContext } from "./types/CustomContexts";
-import "../tailwind.css";
+import TablePermissions from "./views/TablePermissions";
+import TableSchema from "./views/TableSchema";
 class Application extends Nullstack {
   prepare({ page }: NullstackClientContext) {
     page.locale = "en-US";
@@ -22,16 +22,63 @@ class Application extends Nullstack {
     return (
       <main class="w-full h-screen">
         <head>
-          <meta name="description" content="Log into your account to join the revolution." />
-          <meta name="keywords" content="tableland, database, web3, blockchain" />
+          <title>TableExplorer - An Admin tool for TableLand</title>
+
+          <meta
+            name="keywords"
+            content="tableland, database, web3, blockchain"
+          />
           <meta name="author" content="AE Studio" />
-          <meta property="og:image" content=""></meta>
+          <meta
+            name="title"
+            content="TableExplorer - An Admin tool for TableLand"
+          />
+          <meta
+            name="description"
+            content="A permissionless relational database for web3 natives. Built for devs, NFT creators, and web3 visionaries."
+          />
+
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://tableexplorer.com/" />
+          <meta
+            property="og:title"
+            content="TableExplorer - An Admin tool for TableLand"
+          />
+          <meta
+            property="og:description"
+            content="A permissionless relational database for web3 natives. Built for devs, NFT creators, and web3 visionaries."
+          />
+          <meta
+            property="og:image"
+            content="https://tableexplorer.com/og.png"
+          />
+
+          <meta property="twitter:card" content="summary_large_image" />
+          <meta property="twitter:url" content="https://tableexplorer.com/" />
+          <meta
+            property="twitter:title"
+            content="TableExplorer - An Admin tool for TableLand"
+          />
+          <meta
+            property="twitter:description"
+            content="A permissionless relational database for web3 natives. Built for devs, NFT creators, and web3 visionaries."
+          />
+          <meta
+            property="twitter:image"
+            content="https://tableexplorer.com/og.png"
+          />
         </head>
         {__tableland?.token?.token ? (
           <div class="w-full h-full">
-            <div class="w-full flex justify-between" style="height: calc(100% - 50px)">
+            <div
+              class="w-full flex justify-between"
+              style="height: calc(100% - 50px)"
+            >
               <Sidebar key="sidebar" />
-              <div class="flex flex-col w-full h-full" style="height: calc(100% - 50px); min-width: calc(100% - 300px);">
+              <div
+                class="flex flex-col w-full h-full"
+                style="height: calc(100% - 50px); min-width: calc(100% - 300px);"
+              >
                 <Home route="/" />
                 <Table route="/table" />
                 <TableSchema route="/schema" />
