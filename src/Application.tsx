@@ -14,6 +14,9 @@ class Application extends Nullstack {
   prepare({ page }: NullstackClientContext) {
     page.locale = "en-US";
     page.title = "TableExplorer - An Admin tool for TableLand";
+    page.image = "/og.png";
+    page.description =
+      "A permissionless relational database for web3 natives. Built for devs, NFT creators, and web3 visionaries.";
   }
 
   render(context: NullstackClientContext) {
@@ -29,14 +32,6 @@ class Application extends Nullstack {
             content="tableland, database, web3, blockchain"
           />
           <meta name="author" content="AE Studio" />
-          <meta
-            name="title"
-            content="TableExplorer - An Admin tool for TableLand"
-          />
-          <meta
-            name="description"
-            content="A permissionless relational database for web3 natives. Built for devs, NFT creators, and web3 visionaries."
-          />
 
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://tableexplorer.com/" />
